@@ -19,6 +19,7 @@ class TvShow {
   List<Genre>? genres;
   List<Season>? seasons;
   String? nextEpisodeInfo;
+  int? remainingEpisodes;
 
   TvShow({
     this.id,
@@ -38,6 +39,7 @@ class TvShow {
     this.genres,
     this.seasons,
     this.nextEpisodeInfo,
+    this.remainingEpisodes,
   });
 
   Map<String, dynamic> toMap() {

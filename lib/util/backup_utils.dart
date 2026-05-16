@@ -33,7 +33,7 @@ class BackupUtils {
     return directory;
   }
 
-  Future<void> backupData(String fileName) async {
+  Future<bool> backupData(String fileName) async {
     await _loadStoragePermission();
 
     Map<String, dynamic> backup = await _loadBackupData();
@@ -45,10 +45,12 @@ class BackupUtils {
       Fluttertoast.showToast(
         msg: "Backup completed!",
       );
+      return true;
     } else {
       Fluttertoast.showToast(
         msg: "No data found!",
       );
+      return false;
     }
   }
 
@@ -66,7 +68,7 @@ class BackupUtils {
     }
   }
 
-  Future<void> restoreBackupData(String fileName) async {
+  Future<bool> restoreBackupData(String fileName) async {
     await _loadStoragePermission();
 
     try {
@@ -82,10 +84,12 @@ class BackupUtils {
       Fluttertoast.showToast(
         msg: "Success!",
       );
+      return true;
     } catch (e) {
       Fluttertoast.showToast(
         msg: "Error!",
       );
+      return false;
     }
   }
 

@@ -13,21 +13,25 @@ class DialogBackup extends StatefulWidget {
 }
 
 class _DialogBackupState extends State<DialogBackup> {
-  Future<void> _createBackup() async {
-    await BackupUtils().backupData(AppConstants.backupFileName);
+  Future<bool> _createBackup() async {
+    return await BackupUtils().backupData(AppConstants.backupFileName);
   }
 
-  Future<void> _restoreFromBackup() async {
-    await BackupUtils().restoreBackupData(AppConstants.backupFileName);
+  Future<bool> _restoreFromBackup() async {
+    return await BackupUtils().restoreBackupData(AppConstants.backupFileName);
   }
 
   Future<void> _executeBackup() async {
-    Navigator.of(context).pop();
+    bool? result;
 
     if (widget.isCreateBackup) {
-      _createBackup();
+      await _createBackup();
     } else {
-      _restoreFromBackup();
+      result = await _restoreFromBackup();
+    }
+
+    if (mounted) {
+      Navigator.of(context).pop(result);
     }
   }
 

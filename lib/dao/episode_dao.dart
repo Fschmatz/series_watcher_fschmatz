@@ -55,4 +55,24 @@ class EpisodeDAO {
 
     return null;
   }
+
+  Future<int> getRemainingEpisodesCount(int idTvShow) async {
+    Database db = await DatabaseHelper.instance.database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+      '''
+      SELECT COUNT(e.${DatabaseHelper.columnIdEpisodeDetail}) as count
+      FROM ${DatabaseHelper.tableEpisodes} e
+      JOIN ${DatabaseHelper.tableSeasons} s ON e.${DatabaseHelper.columnIdSeasonEpisode} = s.${DatabaseHelper.columnIdSeason}
+      WHERE s.${DatabaseHelper.columnIdTvShowSeason} = ? 
+        AND s.${DatabaseHelper.columnSeasonNumber} != 0
+        AND e.${DatabaseHelper.columnIdEpisodeDetail} NOT IN (SELECT ${DatabaseHelper.columnIdEpisode} FROM ${DatabaseHelper.tableEpisodesWatched} WHERE ${DatabaseHelper.columnIdTvShowRef} = ?)
+      ''',
+      [idTvShow, idTvShow],
+    );
+
+    if (maps.isNotEmpty) {
+      return Sqflite.firstIntValue(maps) ?? 0;
+    }
+    return 0;
+  }
 }

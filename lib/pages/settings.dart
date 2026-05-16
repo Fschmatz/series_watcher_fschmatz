@@ -108,12 +108,18 @@ class SettingsState extends State<Settings> {
           ),
 
           ListTile(
-            onTap: () => showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return DialogBackup(isCreateBackup: true);
-              },
-            ),
+            onTap: () async {
+              bool? result = await showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) {
+                  return const DialogBackup(isCreateBackup: true);
+                },
+              );
+
+              if (result == true && context.mounted) {
+                StoreProvider.dispatch<AppState>(context, LoadAppParametersAction());
+              }
+            },
             leading: const Icon(Icons.save_outlined),
             title: const Text("Backup now"),
             subtitle: Row(
@@ -124,12 +130,20 @@ class SettingsState extends State<Settings> {
             ),
           ),
           ListTile(
-            onTap: () => showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return DialogBackup(isCreateBackup: false);
-              },
-            ),
+            onTap: () async {
+              bool? result = await showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) {
+                  return const DialogBackup(isCreateBackup: false);
+                },
+              );
+
+              if (result == true && context.mounted) {
+                StoreProvider.dispatch<AppState>(context, LoadAppParametersAction());
+                StoreProvider.dispatch<AppState>(context, LoadTvShowsAction());
+                StoreProvider.dispatch<AppState>(context, LoadWatchedEpisodesAction());
+              }
+            },
             leading: const Icon(Icons.settings_backup_restore_outlined),
             title: const Text("Restore from backup"),
           ),

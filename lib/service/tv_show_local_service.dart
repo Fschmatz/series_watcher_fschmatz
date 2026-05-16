@@ -36,6 +36,7 @@ class TvShowLocalService extends StoreService {
           final epNum = (nextEp.episodeNumber ?? 0).toString().padLeft(2, '0');
           show.nextEpisodeInfo = 'S${seasonNum}E$epNum - ${nextEp.name}';
         }
+        show.remainingEpisodes = await _episodeDao.getRemainingEpisodesCount(show.id!);
       }
     }
     return shows;
