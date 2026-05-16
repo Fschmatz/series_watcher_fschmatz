@@ -11,6 +11,7 @@ class LoadAppParametersAction extends AppAction {
   @override
   Future<AppState?> reduce() async {
     List<AppParameter> parameters = await AppParameterService().getAll();
+
     return state.copyWith(appParameters: parameters);
   }
 }
@@ -23,7 +24,8 @@ class SaveAppParameterAction extends AppAction {
   @override
   Future<AppState?> reduce() async {
     await AppParameterService().saveParameter(appParameter);
-    return null; // No state change needed here, usually followed by a load if necessary
+
+    return null;
   }
 }
 
@@ -51,6 +53,7 @@ class LoadWatchedEpisodesAction extends AppAction {
   @override
   Future<AppState?> reduce() async {
     List<int> watchedIds = await TvShowLocalService().getAllWatchedEpisodeIds();
+
     return state.copyWith(watchedEpisodeIds: watchedIds);
   }
 }
@@ -63,8 +66,8 @@ class SaveTvShowAction extends AppAction {
   @override
   Future<AppState?> reduce() async {
     try {
-      // 1. Save basic info immediately for instant UI feedback
       await TvShowLocalService().saveTvShow(tvShow);
+
       return null;
     } catch (e) {
       return null;
@@ -75,30 +78,43 @@ class SaveTvShowAction extends AppAction {
   void after() {
     dispatch(LoadTvShowsAction());
 
-    // 2. Trigger full download in the background (no await)
     if (tvShow.id != null) {
       TvShowLocalService()
           .downloadAndSaveTvShow(tvShow.id!)
           .then((_) {
             dispatch(LoadTvShowsAction());
           })
-          .catchError((e) {
-          });
+          .catchError((e) {});
     }
   }
 }
 
 class SyncTvShowsAction extends AppAction {
   @override
+  void before() => dispatch(_SetSyncingShowsAction(true));
+
+  @override
   Future<AppState?> reduce() async {
     await TvShowLocalService().syncAllSavedTvShows();
-    return null;
+    await AppParameterService().saveLastSyncDate();
+    dispatch(LoadAppParametersAction());
+
+    return state.copyWith(isSyncingShows: false);
   }
 
   @override
   void after() {
     dispatch(LoadTvShowsAction());
   }
+}
+
+class _SetSyncingShowsAction extends AppAction {
+  final bool isSyncing;
+
+  _SetSyncingShowsAction(this.isSyncing);
+
+  @override
+  AppState? reduce() => state.copyWith(isSyncingShows: isSyncing);
 }
 
 class RemoveTvShowAction extends AppAction {
@@ -109,6 +125,7 @@ class RemoveTvShowAction extends AppAction {
   @override
   Future<AppState?> reduce() async {
     await TvShowLocalService().removeTvShow(id);
+
     return null;
   }
 
@@ -128,6 +145,7 @@ class ToggleArchiveTvShowAction extends AppAction {
   @override
   Future<AppState?> reduce() async {
     await TvShowLocalService().archiveTvShow(id, archive);
+
     return null;
   }
 
@@ -159,6 +177,7 @@ class ToggleEpisodeWatchedAction extends AppAction {
     } else {
       await TvShowLocalService().unmarkEpisodeAsWatched(episode.id!);
     }
+
     return null;
   }
 
@@ -178,14 +197,17 @@ class MarkSeasonAsWatchedAction extends AppAction {
   @override
   Future<AppState?> reduce() async {
     for (var episode in episodes) {
-      await TvShowLocalService().markEpisodeAsWatched(EpisodeWatched(
-        idEpisode: episode.id,
-        idTvShow: tvShowId,
-        seasonNumber: episode.seasonNumber,
-        episodeNumber: episode.episodeNumber,
-        watchDate: DateTime.now().toString(),
-      ));
+      await TvShowLocalService().markEpisodeAsWatched(
+        EpisodeWatched(
+          idEpisode: episode.id,
+          idTvShow: tvShowId,
+          seasonNumber: episode.seasonNumber,
+          episodeNumber: episode.episodeNumber,
+          watchDate: DateTime.now().toString(),
+        ),
+      );
     }
+
     return null;
   }
 

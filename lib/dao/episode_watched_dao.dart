@@ -64,4 +64,24 @@ class EpisodeWatchedDAO {
     );
     return maps.map((m) => m[DatabaseHelper.columnIdEpisode] as int).toList();
   }
+  Future<List<Map<String, dynamic>>> getHistoryLastTwoMonths() async {
+    Database db = await DatabaseHelper.instance.database;
+    final sixtyDaysAgo = DateTime.now().subtract(const Duration(days: 60)).toString();
+
+    final sql = '''
+      SELECT 
+        t.name AS tv_show_name,
+        e.name AS episode_name,
+        ew.season_number,
+        ew.episode_number,
+        ew.watch_date
+      FROM ${DatabaseHelper.tableEpisodesWatched} ew
+      INNER JOIN ${DatabaseHelper.tableTvShows} t ON t.id = ew.id_tv_show
+      INNER JOIN ${DatabaseHelper.tableEpisodes} e ON e.id = ew.id_episode
+      WHERE ew.watch_date >= ?
+      ORDER BY ew.watch_date DESC
+    ''';
+
+    return await db.rawQuery(sql, [sixtyDaysAgo]);
+  }
 }

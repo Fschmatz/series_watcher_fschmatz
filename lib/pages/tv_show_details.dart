@@ -108,15 +108,12 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                                   title: const Text('Remove Series'),
                                   content: const Text('Are you sure you want to remove this series from your watchlist? All progress will be lost.'),
                                   actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text('CANCEL'),
-                                    ),
+                                    TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCEL')),
                                     TextButton(
                                       onPressed: () {
-                                        Navigator.pop(context); // Close dialog
+                                        Navigator.pop(context);
                                         onRemoveShow(widget.tvShowId);
-                                        Navigator.pop(this.context); // Exit details page
+                                        Navigator.pop(this.context);
                                         Fluttertoast.showToast(msg: "Removed from watchlist");
                                       },
                                       child: const Text('REMOVE', style: TextStyle(color: Colors.red)),

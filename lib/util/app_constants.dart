@@ -1,14 +1,26 @@
-class AppConstants {
-  static final String backupFileName = "series_watcher_backup";
-  static final String lastBackupDateAppParameter = "lastBackupDate";
-  static final String appVersion = "0.0.5";
-  static final String appName = "Series Watcher Fschmatz";
-  static final String appNameHomePage = "Series Watcher";
-  static final String repositoryLink = "https://github.com/Fschmatz/playlist_saver";
+import 'package:flutter/material.dart';
 
-  static final String changelogCurrent =
+class AppConstants {
+  static const String backupFileName = "series_watcher_backup";
+  static const String appVersion = "0.6.0";
+  static const String appName = "Series Watcher Fschmatz";
+  static const String appNameHomePage = "Series Watcher";
+  static const String repositoryLink = "https://github.com/Fschmatz/playlist_saver";
+  static const EdgeInsets marginSeriesCards = EdgeInsets.symmetric(horizontal: 12, vertical: 6);
+  static const String lastBackupDateAppParameter = "lastBackupDate";
+  static const String lastSyncDateAppParameter = "lastSyncDate";
+
+  static const String changelogCurrent =
       '''
-$appVersion
+0.6.0
+- UI Changes
+- Add backup and restore
+- Add delete TV Shows
+- Add History Page
+''';
+
+  static const String changelogsOld = '''
+0.5.0  
 - Add insert TV Shows
 - Add mark season as watched
 - Delete TV Show from watchlist
@@ -20,11 +32,9 @@ $appVersion
 - Get API data
 - Bug fixes
 - Save
-- DB
-''';
-
-  static final String changelogsOld = '''
-0.0.1
+- DB  
+  
+0.1.0
 - Project start 
 ''';
 }

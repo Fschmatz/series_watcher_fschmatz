@@ -6,12 +6,14 @@ class AppState {
   final List<TvShow> tvShows;
   final List<int> watchedEpisodeIds;
   final bool isLoadingShows;
+  final bool isSyncingShows;
 
   AppState({
     required this.appParameters,
     required this.tvShows,
     required this.watchedEpisodeIds,
     this.isLoadingShows = false,
+    this.isSyncingShows = false,
   });
 
   static AppState initialState() => AppState(
@@ -19,6 +21,7 @@ class AppState {
         tvShows: [],
         watchedEpisodeIds: [],
         isLoadingShows: true,
+        isSyncingShows: false,
       );
 
   AppState copyWith({
@@ -26,12 +29,14 @@ class AppState {
     List<TvShow>? tvShows,
     List<int>? watchedEpisodeIds,
     bool? isLoadingShows,
+    bool? isSyncingShows,
   }) {
     return AppState(
       appParameters: appParameters ?? this.appParameters,
       tvShows: tvShows ?? this.tvShows,
       watchedEpisodeIds: watchedEpisodeIds ?? this.watchedEpisodeIds,
       isLoadingShows: isLoadingShows ?? this.isLoadingShows,
+      isSyncingShows: isSyncingShows ?? this.isSyncingShows,
     );
   }
 }

@@ -2,7 +2,6 @@ import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import '../entity/season.dart';
 import '../entity/tv_show.dart';
 import '../redux/actions.dart';
 import '../redux/app_state.dart';
@@ -58,24 +57,17 @@ class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
         final isSaved = savedShows.any((s) => s.id == widget.tvShowId);
 
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Search Preview'),
-            actions: [
-              if (!isSaved && _tvShow != null)
-                IconButton(
-                  icon: const Icon(Icons.add_circle_outline),
+          appBar: AppBar(title: const Text('Preview')),
+          floatingActionButton: (!isSaved && _tvShow != null)
+              ? FloatingActionButton.extended(
                   onPressed: () {
                     onSaveShow(_tvShow!);
                     Fluttertoast.showToast(msg: "Added to watchlist!");
                   },
-                ),
-              if (isSaved)
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Icon(Icons.check_circle, color: Colors.green),
-                ),
-            ],
-          ),
+                  icon: const Icon(Icons.add),
+                  label: const Text("Save Show"),
+                )
+              : null,
           body: _isLoading
               ? const Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
@@ -113,22 +105,12 @@ class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
                       if (_tvShow?.seasons != null && _tvShow!.seasons!.isNotEmpty) ...[
                         Text('Seasons', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                         const SizedBox(height: 8),
-                        Column(
-                          children: _tvShow!.seasons!
-                              .where((s) => s.seasonNumber != 0)
-                              .map((season) => SeasonTile(season: season))
-                              .toList(),
-                        ),
+                        Column(children: _tvShow!.seasons!.where((s) => s.seasonNumber != 0).map((season) => SeasonTile(season: season)).toList()),
                         if (_tvShow!.seasons!.any((s) => s.seasonNumber == 0)) ...[
                           const SizedBox(height: 24),
                           Text('Specials', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                           const SizedBox(height: 8),
-                          Column(
-                            children: _tvShow!.seasons!
-                                .where((s) => s.seasonNumber == 0)
-                                .map((season) => SeasonTile(season: season))
-                                .toList(),
-                          ),
+                          Column(children: _tvShow!.seasons!.where((s) => s.seasonNumber == 0).map((season) => SeasonTile(season: season)).toList()),
                         ],
                       ],
                     ],

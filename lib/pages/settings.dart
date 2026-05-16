@@ -71,17 +71,33 @@ class SettingsState extends State<Settings> {
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: themeColorApp),
             ),
           ),
-          StoreConnector<AppState, VoidCallback>(
-            converter: (store) =>
-                () => store.dispatch(SyncTvShowsAction()),
-            builder: (context, onSync) => ListTile(
-              onTap: () {
-                onSync();
+          StoreConnector<AppState, ({bool isSyncing, VoidCallback onSync})>(
+            converter: (store) => (
+              isSyncing: store.state.isSyncingShows,
+              onSync: () => store.dispatch(SyncTvShowsAction()),
+            ),
+            builder: (context, viewData) => ListTile(
+              onTap: viewData.isSyncing ? null : () {
+                viewData.onSync();
                 Fluttertoast.showToast(msg: "Synchronizing series...");
               },
-              leading: const Icon(Icons.sync),
+              leading: viewData.isSyncing 
+                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)) 
+                  : const Icon(Icons.sync),
               title: const Text("Sync series data"),
-              subtitle: const Text("Update seasons and episodes for offline use"),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Update seasons and episodes for offline use"),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      const Text("Last sync: "),
+                      AppParameterValue(parameterKey: AppConstants.lastSyncDateAppParameter),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           ListTile(

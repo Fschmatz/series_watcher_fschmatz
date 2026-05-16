@@ -14,11 +14,11 @@ class DialogBackup extends StatefulWidget {
 
 class _DialogBackupState extends State<DialogBackup> {
   Future<void> _createBackup() async {
-   // await BackupUtils().backupData(AppConstants.backupFileName);
+    await BackupUtils().backupData(AppConstants.backupFileName);
   }
 
   Future<void> _restoreFromBackup() async {
-    //await BackupUtils().restoreBackupData(AppConstants.backupFileName);
+    await BackupUtils().restoreBackupData(AppConstants.backupFileName);
   }
 
   Future<void> _executeBackup() async {
@@ -34,21 +34,15 @@ class _DialogBackupState extends State<DialogBackup> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text(
-        "Confirm",
-      ),
-      content: Text(
-        widget.isCreateBackup ? "Create backup ?" : "Restore backup ?",
-      ),
+      title: const Text("Confirm"),
+      content: Text(widget.isCreateBackup ? "Create backup ?" : "Restore backup ?"),
       actions: [
         TextButton(
-          child: const Text(
-            "Yes",
-          ),
+          child: const Text("Yes"),
           onPressed: () {
             _executeBackup();
           },
-        )
+        ),
       ],
     );
   }

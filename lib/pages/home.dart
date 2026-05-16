@@ -9,6 +9,7 @@ import '../redux/app_state.dart';
 import '../redux/selectors.dart';
 import '../util/app_constants.dart';
 import '../widget/tv_show_card_home.dart';
+import 'history_page.dart';
 import 'settings.dart';
 import 'tv_show_details.dart';
 
@@ -18,10 +19,7 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, (List<TvShow>, bool)>(
-      converter: (store) => (
-        selectActiveTvShows(),
-        store.state.isLoadingShows,
-      ),
+      converter: (store) => (selectActiveTvShows(), store.state.isLoadingShows),
       builder: (context, viewData) {
         final (tvShows, isLoading) = viewData;
 
@@ -35,16 +33,25 @@ class Home extends StatelessWidget {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchPage()));
                 },
               ),
-              IconButton(
-                icon: const Icon(Icons.archive_outlined),
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ArchivePage()));
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.settings_outlined),
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const Settings()));
+              PopupMenuButton<int>(
+                icon: const Icon(Icons.more_vert_outlined),
+                itemBuilder: (BuildContext context) => <PopupMenuItem<int>>[
+                  const PopupMenuItem<int>(value: 0, child: Text('Archive')),
+                  const PopupMenuItem<int>(value: 1, child: Text('History')),
+                  const PopupMenuItem<int>(value: 2, child: Text('Settings')),
+                ],
+                onSelected: (int value) {
+                  switch (value) {
+                    case 0:
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const ArchivePage()));
+                      break;
+                    case 1:
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryPage()));
+                      break;
+                    case 2:
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const Settings()));
+                      break;
+                  }
                 },
               ),
             ],
@@ -52,30 +59,26 @@ class Home extends StatelessWidget {
           body: PageTransitionSwitcher(
             duration: const Duration(milliseconds: 300),
             transitionBuilder: (child, animation, secondaryAnimation) {
-              return FadeThroughTransition(
-                animation: animation,
-                secondaryAnimation: secondaryAnimation,
-                child: child,
-              );
+              return FadeThroughTransition(animation: animation, secondaryAnimation: secondaryAnimation, child: child);
             },
             child: isLoading
                 ? const Center(key: ValueKey('loading'), child: CircularProgressIndicator())
                 : tvShows.isEmpty
-                    ? const Center(key: ValueKey('empty'), child: Text('No series saved yet'))
-                    : ListView.builder(
-                        key: const ValueKey('list'),
-                        itemCount: tvShows.length,
-                        itemBuilder: (context, index) {
-                          final tvShow = tvShows[index];
-                          return TvShowCardHome(
-                            key: ValueKey(tvShow.id),
-                            tvShow: tvShow,
-                            onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowDetails(tvShowId: tvShow.id!)));
-                            },
-                          );
+                ? const Center(key: ValueKey('empty'), child: Text('No series saved yet'))
+                : ListView.builder(
+                    key: const ValueKey('list'),
+                    itemCount: tvShows.length,
+                    itemBuilder: (context, index) {
+                      final tvShow = tvShows[index];
+                      return TvShowCardHome(
+                        key: ValueKey(tvShow.id),
+                        tvShow: tvShow,
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowDetails(tvShowId: tvShow.id!)));
                         },
-                      ),
+                      );
+                    },
+                  ),
           ),
         );
       },

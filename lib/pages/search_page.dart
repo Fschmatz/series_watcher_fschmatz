@@ -1,7 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import '../entity/tv_show.dart';
 import '../redux/actions.dart';
@@ -113,94 +112,62 @@ class _SearchPageState extends State<SearchPage> {
               ),
               onSubmitted: _search,
             ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.search),
-                onPressed: () => _search(_searchController.text),
-              ),
-            ],
+            actions: [IconButton(icon: const Icon(Icons.search), onPressed: () => _search(_searchController.text))],
           ),
           body: PageTransitionSwitcher(
             duration: const Duration(milliseconds: 300),
             transitionBuilder: (child, animation, secondaryAnimation) {
-              return FadeThroughTransition(
-                animation: animation,
-                secondaryAnimation: secondaryAnimation,
-                child: child,
-              );
+              return FadeThroughTransition(animation: animation, secondaryAnimation: secondaryAnimation, child: child);
             },
             child: _isSearching
                 ? _isLoading
-                    ? const Center(key: ValueKey('loading_search'), child: CircularProgressIndicator())
-                    : _results.isEmpty
-                        ? const Center(key: ValueKey('no_results'), child: Text('No results found'))
-                        : ListView.builder(
-                            key: const ValueKey('results_list'),
-                            itemCount: _results.length,
-                            itemBuilder: (context, index) {
-                              final tvShow = _results[index];
-                              final isSaved = savedShows.any((s) => s.id == tvShow.id);
-                              return TvShowCardSearch(
-                                key: ValueKey(tvShow.id),
-                                tvShow: tvShow,
-                                onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowDetailsSearch(tvShowId: tvShow.id!)));
-                                },
-                                trailing: isSaved
-                                    ? const Icon(Icons.check)
-                                    : IconButton(
-                                        icon: const Icon(Icons.add_circle_outline),
-                                        onPressed: () {
-                                          onSaveShow(tvShow);
-                                          Fluttertoast.showToast(msg: 'Added to watchlist!');
-                                        },
-                                      ),
-                              );
-                            },
-                          )
+                      ? const Center(key: ValueKey('loading_search'), child: CircularProgressIndicator())
+                      : _results.isEmpty
+                      ? const Center(key: ValueKey('no_results'), child: Text('No results found'))
+                      : ListView.builder(
+                          key: const ValueKey('results_list'),
+                          itemCount: _results.length,
+                          itemBuilder: (context, index) {
+                            final tvShow = _results[index];
+                            return TvShowCardSearch(
+                              key: ValueKey(tvShow.id),
+                              tvShow: tvShow,
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowDetailsSearch(tvShowId: tvShow.id!)));
+                              },
+                            );
+                          },
+                        )
                 : _isTrendingLoading
-                    ? const Center(key: ValueKey('loading_trending'), child: CircularProgressIndicator())
-                    : Column(
-                        key: const ValueKey('trending_view'),
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                            child: Text(
-                              'Trending This Week',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Expanded(
-                            child: _trending.isEmpty
-                                ? const Center(child: Text('Could not load trending shows'))
-                                : ListView.builder(
-                                    key: const ValueKey('trending_list'),
-                                    itemCount: _trending.length,
-                                    itemBuilder: (context, index) {
-                                      final tvShow = _trending[index];
-                                      final isSaved = savedShows.any((s) => s.id == tvShow.id);
-                                      return TvShowCardSearch(
-                                        key: ValueKey(tvShow.id),
-                                        tvShow: tvShow,
-                                        onTap: () {
-                                          Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowDetailsSearch(tvShowId: tvShow.id!)));
-                                        },
-                                        trailing: isSaved
-                                            ? const Icon(Icons.check, color: Colors.green)
-                                            : IconButton(
-                                                icon: const Icon(Icons.add_circle_outline),
-                                                onPressed: () {
-                                                  onSaveShow(tvShow);
-                                                  Fluttertoast.showToast(msg: 'Added to watchlist!');
-                                                },
-                                              ),
-                                      );
-                                    },
-                                  ),
-                          ),
-                        ],
+                ? const Center(key: ValueKey('loading_trending'), child: CircularProgressIndicator())
+                : Column(
+                    key: const ValueKey('trending_view'),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        child: Text('Trending', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                       ),
+                      Expanded(
+                        child: _trending.isEmpty
+                            ? const Center(child: Text('Could not load trending shows'))
+                            : ListView.builder(
+                                key: const ValueKey('trending_list'),
+                                itemCount: _trending.length,
+                                itemBuilder: (context, index) {
+                                  final tvShow = _trending[index];
+                                  return TvShowCardSearch(
+                                    key: ValueKey(tvShow.id),
+                                    tvShow: tvShow,
+                                    onTap: () {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowDetailsSearch(tvShowId: tvShow.id!)));
+                                    },
+                                  );
+                                },
+                              ),
+                      ),
+                    ],
+                  ),
           ),
         );
       },

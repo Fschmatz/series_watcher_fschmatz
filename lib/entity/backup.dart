@@ -1,18 +1,35 @@
 class Backup {
-  //ajustar
+  List<Map<String, dynamic>> tvShows;
+  List<Map<String, dynamic>> seasons;
+  List<Map<String, dynamic>> episodes;
+  List<Map<String, dynamic>> episodesWatched;
+  List<Map<String, dynamic>> appParameters;
 
-  /* List<Map<String, dynamic>> playlists;
-  List<Map<String, dynamic>> parameters;
-
-  Backup({required this.playlists, required this.parameters});
+  Backup({
+    required this.tvShows,
+    required this.seasons,
+    required this.episodes,
+    required this.episodesWatched,
+    required this.appParameters,
+  });
 
   factory Backup.fromJson(Map<String, dynamic> json) {
     return Backup(
-        playlists: List<Map<String, dynamic>>.from(json['playlists'] ?? []),
-        parameters: List<Map<String, dynamic>>.from(json['parameters'] ?? []));
+      tvShows: List<Map<String, dynamic>>.from(json['tvShows'] ?? []),
+      seasons: List<Map<String, dynamic>>.from(json['seasons'] ?? []),
+      episodes: List<Map<String, dynamic>>.from(json['episodes'] ?? []),
+      episodesWatched: List<Map<String, dynamic>>.from(json['episodesWatched'] ?? []),
+      appParameters: List<Map<String, dynamic>>.from(json['appParameters'] ?? []),
+    );
   }
 
   Map<String, dynamic> toJson() {
-    return {'playlists': playlists, 'parameters': parameters};
-  }*/
+    return {
+      'tvShows': tvShows,
+      'seasons': seasons,
+      'episodes': episodes,
+      'episodesWatched': episodesWatched,
+      'appParameters': appParameters,
+    };
+  }
 }

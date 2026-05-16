@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
+
 import '../entity/tv_show.dart';
 import '../util/api_configs.dart';
 
@@ -9,30 +11,16 @@ class TvShowPoster extends StatelessWidget {
   final double height;
   final double borderRadius;
 
-  const TvShowPoster({
-    super.key,
-    required this.tvShow,
-    this.width = 100,
-    this.height = 150,
-    this.borderRadius = 8,
-  });
+  const TvShowPoster({super.key, required this.tvShow, this.width = 100, this.height = 180, this.borderRadius = 8});
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: _buildImage(context),
-    );
+    return ClipRRect(borderRadius: BorderRadius.circular(borderRadius), child: _buildImage(context));
   }
 
   Widget _buildImage(BuildContext context) {
     if (tvShow?.posterImage != null) {
-      return Image.memory(
-        base64Decode(tvShow!.posterImage!),
-        width: width,
-        height: height,
-        fit: BoxFit.cover,
-      );
+      return Image.memory(base64Decode(tvShow!.posterImage!), width: width, height: height, fit: BoxFit.cover);
     } else if (tvShow?.posterPath != null) {
       return Image.network(
         '${ApiConfigs.imageBaseUrl}${tvShow!.posterPath}',

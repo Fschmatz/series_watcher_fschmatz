@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../entity/tv_show.dart';
+import '../util/app_constants.dart';
 import 'tv_show_poster.dart';
 
 class TvShowCardArchive extends StatelessWidget {
@@ -12,7 +13,7 @@ class TvShowCardArchive extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: AppConstants.marginSeriesCards,
       elevation: 0,
       clipBehavior: Clip.antiAlias,
       color: Theme.of(context).colorScheme.surfaceContainerHigh,
@@ -35,18 +36,15 @@ class TvShowCardArchive extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      'Archived',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic),
-                    ),
+                    // Text('Archived', style: Theme.of(context).textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic)),
                   ],
                 ),
               ),
             ),
-            const Padding(
+            /*  const Padding(
               padding: EdgeInsets.all(16.0),
               child: Icon(Icons.chevron_right, color: Colors.grey),
-            ),
+            ),*/
           ],
         ),
       ),

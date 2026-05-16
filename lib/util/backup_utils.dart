@@ -3,11 +3,12 @@ import 'dart:io';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sqflite/sqflite.dart';
+import '../dao/database_helper.dart';
 import '../entity/backup.dart';
 import '../service/app_parameter_service.dart';
 
 class BackupUtils {
- /* final playlistDao = PlaylistDao.instance;
 
   Future<void> _loadStoragePermission() async {
     var status = await Permission.manageExternalStorage.status;
@@ -37,7 +38,7 @@ class BackupUtils {
 
     Map<String, dynamic> backup = await _loadBackupData();
 
-    if (backup['playlists'].isNotEmpty) {
+    if (backup['tvShows'].isNotEmpty || backup['appParameters'].isNotEmpty) {
       await _saveListAsJson(backup, fileName);
       await AppParameterService().saveLastBackupDate();
 
@@ -68,7 +69,7 @@ class BackupUtils {
   Future<void> restoreBackupData(String fileName) async {
     await _loadStoragePermission();
 
-  *//*  try {
+    try {
       String directory = await _loadDirectory();
 
       final file = File('$directory/$fileName.json');
@@ -85,28 +86,59 @@ class BackupUtils {
       Fluttertoast.showToast(
         msg: "Error!",
       );
-    }*//*
+    }
   }
 
   Future<Map<String, dynamic>> _loadBackupData() async {
-    List<Map<String, dynamic>> playlistsJson = await playlistDao.queryAllRows();
-    List<Map<String, dynamic>> parametersJson = await AppParameterService().loadAllParameters();
+    Database db = await DatabaseHelper.instance.database;
 
-    Backup backupEntity = Backup(playlists: playlistsJson, parameters: parametersJson);
+    List<Map<String, dynamic>> tvShows = await db.query(DatabaseHelper.tableTvShows);
+    List<Map<String, dynamic>> seasons = await db.query(DatabaseHelper.tableSeasons);
+    List<Map<String, dynamic>> episodes = await db.query(DatabaseHelper.tableEpisodes);
+    List<Map<String, dynamic>> episodesWatched = await db.query(DatabaseHelper.tableEpisodesWatched);
+    List<Map<String, dynamic>> appParameters = await AppParameterService().loadAllParameters();
 
-    Map<String, dynamic> backupJson = backupEntity.toJson();
+    Backup backupEntity = Backup(
+      tvShows: tvShows,
+      seasons: seasons,
+      episodes: episodes,
+      episodesWatched: episodesWatched,
+      appParameters: appParameters,
+    );
 
-    return backupJson;
+    return backupEntity.toJson();
   }
 
   Future<void> _deleteAllData() async {
-    await playlistDao.deleteAll();
+    Database db = await DatabaseHelper.instance.database;
+
+    await db.delete(DatabaseHelper.tableEpisodesWatched);
+    await db.delete(DatabaseHelper.tableEpisodes);
+    await db.delete(DatabaseHelper.tableSeasons);
+    await db.delete(DatabaseHelper.tableTvShows);
+
     await AppParameterService().deleteAllParameters();
   }
 
   Future<void> _insertBackupData(Backup backup) async {
-    await PlaylistService().insertBackupData(backup);
+    Database db = await DatabaseHelper.instance.database;
 
-    await AppParameterService().insertParametersFromRestoreBackup(backup.parameters);
-  }*/
+    for (var tvShow in backup.tvShows) {
+      await db.insert(DatabaseHelper.tableTvShows, tvShow, conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+
+    for (var season in backup.seasons) {
+      await db.insert(DatabaseHelper.tableSeasons, season, conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+
+    for (var episode in backup.episodes) {
+      await db.insert(DatabaseHelper.tableEpisodes, episode, conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+
+    for (var episodeWatched in backup.episodesWatched) {
+      await db.insert(DatabaseHelper.tableEpisodesWatched, episodeWatched, conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+
+    await AppParameterService().insertParametersFromRestoreBackup(backup.appParameters);
+  }
 }

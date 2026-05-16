@@ -9,6 +9,7 @@ import '../dao/episode_watched_dao.dart';
 import '../dao/season_dao.dart';
 import '../dao/tv_show_dao.dart';
 import '../entity/episode_watched.dart';
+import '../entity/history_item.dart';
 import '../entity/tv_show.dart';
 import '../util/api_configs.dart';
 import 'tv_service.dart';
@@ -148,5 +149,10 @@ class TvShowLocalService extends StoreService {
 
   Future<void> archiveTvShow(int id, bool archive) async {
     await _tvShowDao.archiveTvShow(id, archive);
+  }
+
+  Future<List<HistoryItem>> getHistoryLastTwoMonths() async {
+    final maps = await _episodeWatchedDao.getHistoryLastTwoMonths();
+    return maps.map((m) => HistoryItem.fromMap(m)).toList();
   }
 }
