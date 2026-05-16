@@ -1,0 +1,31 @@
+import 'package:flutter/material.dart';
+import 'package:jiffy/jiffy.dart';
+import 'package:series_watcher_fschmatz/util/app_constants.dart';
+import 'package:series_watcher_fschmatz/util/utils_string.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+class UtilsFunctions {
+  static void openGithubRepository() {
+    launchBrowser(AppConstants.repositoryLink);
+  }
+
+  static void launchBrowser(String url) {
+    launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+  }
+
+  static String getThemeStringFormatted(ThemeMode? currentTheme) {
+    String theme = currentTheme.toString().replaceAll('ThemeMode.', '');
+
+    if (theme == 'system') {
+      theme = 'system default';
+    }
+
+    return UtilsString.capitalizeFirstLetterString(theme);
+  }
+
+  static String formatDate(String? date) {
+    if (date == null || date.isEmpty) return 'No date';
+      
+    return Jiffy.parse(date).format(pattern: 'dd/MM/yyyy');    
+  }
+}

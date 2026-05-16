@@ -1,0 +1,82 @@
+import 'genre.dart';
+import 'season.dart';
+
+class TvShow {
+  int? id;
+  String? name;
+  String? originalName;
+  String? overview;
+  String? posterPath;
+  String? posterImage;
+  String? backdropPath;
+  String? firstAirDate;
+  double? voteAverage;
+  int? numberOfSeasons;
+  int? numberOfEpisodes;
+  String? status;
+  double? popularity;
+  bool isArchived;
+  List<Genre>? genres;
+  List<Season>? seasons;
+  String? nextEpisodeInfo;
+
+  TvShow({
+    this.id,
+    this.name,
+    this.originalName,
+    this.overview,
+    this.posterPath,
+    this.posterImage,
+    this.backdropPath,
+    this.firstAirDate,
+    this.voteAverage,
+    this.numberOfSeasons,
+    this.numberOfEpisodes,
+    this.status,
+    this.popularity,
+    this.isArchived = false,
+    this.genres,
+    this.seasons,
+    this.nextEpisodeInfo,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'original_name': originalName,
+      'overview': overview,
+      'poster_path': posterPath,
+      'poster_image': posterImage,
+      'backdrop_path': backdropPath,
+      'first_air_date': firstAirDate,
+      'vote_average': voteAverage,
+      'number_of_seasons': numberOfSeasons,
+      'number_of_episodes': numberOfEpisodes,
+      'status': status,
+      'popularity': popularity,
+      'archived': isArchived ? 1 : 0,
+    };
+  }
+
+  factory TvShow.fromMap(Map<String, dynamic> map) {
+    return TvShow(
+      id: map['id'],
+      name: map['name'],
+      originalName: map['original_name'] ?? map['originalName'],
+      overview: map['overview'],
+      posterPath: map['poster_path'] ?? map['posterPath'],
+      posterImage: map['poster_image'] ?? map['posterImage'],
+      backdropPath: map['backdrop_path'] ?? map['backdropPath'],
+      firstAirDate: map['first_air_date'] ?? map['firstAirDate'],
+      voteAverage: (map['vote_average'] ?? map['voteAverage'])?.toDouble(),
+      numberOfSeasons: map['number_of_seasons'] ?? map['numberOfSeasons'],
+      numberOfEpisodes: map['number_of_episodes'] ?? map['numberOfEpisodes'],
+      status: map['status'],
+      popularity: (map['popularity'])?.toDouble(),
+      isArchived: (map['archived'] ?? 0) == 1,
+      genres: map['genres'] != null ? (map['genres'] as List).map((g) => Genre.fromMap(g)).toList() : null,
+      seasons: map['seasons'] != null ? (map['seasons'] as List).map((s) => Season.fromMap(s)).toList() : null,
+    );
+  }
+}
