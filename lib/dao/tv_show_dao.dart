@@ -15,7 +15,10 @@ class TvShowDAO {
 
   Future<List<TvShow>> getAllTvShows() async {
     Database db = await DatabaseHelper.instance.database;
-    final List<Map<String, dynamic>> maps = await db.query(DatabaseHelper.tableTvShows);
+    final List<Map<String, dynamic>> maps = await db.query(
+      DatabaseHelper.tableTvShows,
+      orderBy: '${DatabaseHelper.columnName} COLLATE NOCASE ASC',
+    );
 
     return List.generate(maps.length, (i) {
       return TvShow.fromMap(maps[i]);

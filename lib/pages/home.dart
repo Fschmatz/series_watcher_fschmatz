@@ -8,7 +8,7 @@ import '../pages/search_page.dart';
 import '../redux/app_state.dart';
 import '../redux/selectors.dart';
 import '../util/app_constants.dart';
-import '../widget/tv_show_card_home.dart';
+import '../widget/tv_show_card.dart';
 import 'history_page.dart';
 import 'settings.dart';
 import 'tv_show_details.dart';
@@ -70,7 +70,7 @@ class Home extends StatelessWidget {
                     itemCount: tvShows.length,
                     itemBuilder: (context, index) {
                       final tvShow = tvShows[index];
-                      return TvShowCardHome(
+                      return TvShowCard(
                         key: ValueKey(tvShow.id),
                         tvShow: tvShow,
                         onTap: () {

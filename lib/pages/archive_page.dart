@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../entity/tv_show.dart';
 import '../redux/app_state.dart';
 import '../redux/selectors.dart';
-import '../widget/tv_show_card_archive.dart';
+import '../widget/tv_show_card.dart';
 import 'tv_show_details.dart';
 
 class ArchivePage extends StatelessWidget {
@@ -43,7 +43,7 @@ class ArchivePage extends StatelessWidget {
                         itemCount: archivedShows.length,
                         itemBuilder: (context, index) {
                           final tvShow = archivedShows[index];
-                          return TvShowCardArchive(
+                          return TvShowCard(
                             tvShow: tvShow,
                             onTap: () {
                               Navigator.push(

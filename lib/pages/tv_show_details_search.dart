@@ -22,6 +22,7 @@ class TvShowDetailsSearch extends StatefulWidget {
 class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
   TvShow? _tvShow;
   bool _isLoading = true;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -50,26 +51,58 @@ class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, (List<TvShow>, void Function(TvShow))>(
-      converter: (store) => (store.state.tvShows, (show) => store.dispatch(SaveTvShowAction(show))),
+    return StoreConnector<AppState, (List<TvShow>, Future<void> Function(TvShow))>(
+      converter: (store) => (
+        store.state.tvShows,
+        (show) => store.dispatchAndWait(SaveTvShowAction(show)),
+      ),
       builder: (context, viewData) {
         final (savedShows, onSaveShow) = viewData;
         final isSaved = savedShows.any((s) => s.id == widget.tvShowId);
 
         return Scaffold(
           appBar: AppBar(title: const Text('Preview')),
-          floatingActionButton: (!isSaved && _tvShow != null)
+          floatingActionButton: (!isSaved && _tvShow != null && !_isSaving)
               ? FloatingActionButton.extended(
-                  onPressed: () {
-                    onSaveShow(_tvShow!);
-                    Fluttertoast.showToast(msg: "Added to watchlist!");
+                  onPressed: () async {
+                    setState(() {
+                      _isSaving = true;
+                    });
+                    try {
+                      await onSaveShow(_tvShow!);
+                      Fluttertoast.showToast(msg: "Added to watchlist!");
+                      if (mounted) {
+                        Navigator.pop(context);
+                      }
+                    } catch (e) {
+                      Fluttertoast.showToast(msg: "Error saving show: $e");
+                      if (mounted) {
+                        setState(() {
+                          _isSaving = false;
+                        });
+                      }
+                    }
                   },
                   icon: const Icon(Icons.add),
                   label: const Text("Save Show"),
                 )
               : null,
-          body: _isLoading
-              ? const Center(child: CircularProgressIndicator())
+          body: (_isLoading || _isSaving)
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const CircularProgressIndicator(),
+                      if (_isSaving) ...[
+                        const SizedBox(height: 16),
+                        Text(
+                          'Saving show details...',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ],
+                    ],
+                  ),
+                )
               : SingleChildScrollView(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(

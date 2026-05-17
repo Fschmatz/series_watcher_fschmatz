@@ -4,11 +4,11 @@ import '../entity/tv_show.dart';
 import '../util/app_constants.dart';
 import 'tv_show_poster.dart';
 
-class TvShowCardHome extends StatelessWidget {
+class TvShowCard extends StatelessWidget {
   final TvShow tvShow;
   final VoidCallback? onTap;
 
-  const TvShowCardHome({super.key, required this.tvShow, this.onTap});
+  const TvShowCard({super.key, required this.tvShow, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class TvShowCardHome extends StatelessWidget {
                   children: [
                     Text(
                       tvShow.name ?? 'Unknown',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -40,21 +40,21 @@ class TvShowCardHome extends StatelessWidget {
                         '${tvShow.nextEpisodeInfo}',
                         style: Theme.of(
                           context,
-                        ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600),
+                        ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600, fontSize: 12),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
                     if (tvShow.remainingEpisodes != null && tvShow.remainingEpisodes! > 0) ...[
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(color: Theme.of(context).colorScheme.secondaryContainer, borderRadius: BorderRadius.circular(4)),
                         child: Text(
                           '${tvShow.remainingEpisodes} remaining',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Theme.of(context).colorScheme.onSecondaryContainer,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w600,
                             fontSize: 10,
                           ),
                         ),

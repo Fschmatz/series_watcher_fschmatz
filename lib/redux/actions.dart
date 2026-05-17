@@ -68,6 +68,10 @@ class SaveTvShowAction extends AppAction {
     try {
       await TvShowLocalService().saveTvShow(tvShow);
 
+      if (tvShow.id != null) {
+        await TvShowLocalService().downloadAndSaveTvShow(tvShow.id!);
+      }
+
       return null;
     } catch (e) {
       return null;
@@ -77,15 +81,6 @@ class SaveTvShowAction extends AppAction {
   @override
   void after() {
     dispatch(LoadTvShowsAction());
-
-    if (tvShow.id != null) {
-      TvShowLocalService()
-          .downloadAndSaveTvShow(tvShow.id!)
-          .then((_) {
-            dispatch(LoadTvShowsAction());
-          })
-          .catchError((e) {});
-    }
   }
 }
 

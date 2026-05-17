@@ -20,13 +20,20 @@ class TvShowPoster extends StatelessWidget {
 
   Widget _buildImage(BuildContext context) {
     if (tvShow?.posterImage != null) {
-      return Image.memory(base64Decode(tvShow!.posterImage!), width: width, height: height, fit: BoxFit.cover);
+      return Image.memory(
+        base64Decode(tvShow!.posterImage!),
+        width: width,
+        height: height,
+        fit: BoxFit.cover,
+        gaplessPlayback: true,
+      );
     } else if (tvShow?.posterPath != null) {
       return Image.network(
         '${ApiConfigs.imageBaseUrl}${tvShow!.posterPath}',
         width: width,
         height: height,
         fit: BoxFit.cover,
+        gaplessPlayback: true,
         errorBuilder: (context, error, stackTrace) => _buildPlaceholder(context),
       );
     } else {
