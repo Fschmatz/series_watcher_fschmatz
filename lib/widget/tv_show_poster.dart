@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 
 import '../entity/tv_show.dart';
@@ -19,9 +17,9 @@ class TvShowPoster extends StatelessWidget {
   }
 
   Widget _buildImage(BuildContext context) {
-    if (tvShow?.posterImage != null) {
+    if (tvShow?.posterBytes != null) {
       return Image.memory(
-        base64Decode(tvShow!.posterImage!),
+        tvShow!.posterBytes!,
         width: width,
         height: height,
         fit: BoxFit.cover,

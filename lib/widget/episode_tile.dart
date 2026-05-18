@@ -20,7 +20,39 @@ class EpisodeTile extends StatelessWidget {
           builder: (context) {
             return AlertDialog(
               title: Text('${episode.episodeNumber}. ${episode.name}'),
-              content: SingleChildScrollView(child: Text(episode.overview ?? 'No overview available')),
+              content: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (episode.airDate != null || (episode.runtime != null && episode.runtime! > 0)) ...[
+                      Row(
+                        children: [
+                          if (episode.airDate != null) ...[
+                            Icon(Icons.calendar_today_outlined, size: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                            const SizedBox(width: 6),
+                            Text(
+                              UtilsFunctions.formatDate(episode.airDate),
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                            ),
+                            if (episode.runtime != null && episode.runtime! > 0) const SizedBox(width: 12),
+                          ],
+                          if (episode.runtime != null && episode.runtime! > 0) ...[
+                            Icon(Icons.access_time_outlined, size: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                            const SizedBox(width: 6),
+                            Text(
+                              '${episode.runtime} min',
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    Text(episode.overview ?? 'No overview available'),
+                  ],
+                ),
+              ),
               actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
             );
           },
@@ -33,8 +65,34 @@ class EpisodeTile extends StatelessWidget {
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (episode.airDate != null) Text('Air Date: ${UtilsFunctions.formatDate(episode.airDate)}', style: const TextStyle(fontSize: 12)),
-          const SizedBox(height: 4),
+          if (episode.airDate != null || (episode.runtime != null && episode.runtime! > 0)) ...[
+            Row(
+              children: [
+                if (episode.airDate != null) ...[
+                  Icon(Icons.calendar_today_outlined, size: 14, color: isWatched ? Colors.grey : Theme.of(context).colorScheme.onSurfaceVariant),
+                  const SizedBox(width: 6),
+                  Text(
+                    UtilsFunctions.formatDate(episode.airDate),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: isWatched ? Colors.grey : Theme.of(context).colorScheme.onSurfaceVariant),
+                  ),
+                  if (episode.runtime != null && episode.runtime! > 0) const SizedBox(width: 12),
+                ],
+                if (episode.runtime != null && episode.runtime! > 0) ...[
+                  Icon(Icons.access_time_outlined, size: 14, color: isWatched ? Colors.grey : Theme.of(context).colorScheme.onSurfaceVariant),
+                  const SizedBox(width: 6),
+                  Text(
+                    '${episode.runtime} min',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: isWatched ? Colors.grey : Theme.of(context).colorScheme.onSurfaceVariant),
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 4),
+          ],
           Text(
             episode.overview ?? 'No overview available',
             style: TextStyle(color: isWatched ? Colors.grey : null),

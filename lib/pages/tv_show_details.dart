@@ -2,6 +2,7 @@ import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../entity/episode.dart';
 import '../entity/season.dart';
 import '../entity/tv_show.dart';
 import '../redux/actions.dart';
@@ -12,6 +13,7 @@ import '../util/utils_functions.dart';
 import '../widget/metadata_badge.dart';
 import '../widget/season_list_tile.dart';
 import '../widget/tv_show_poster.dart';
+import '../widget/watching_progress_card.dart';
 
 class TvShowDetails extends StatefulWidget {
   final int tvShowId;
@@ -67,24 +69,31 @@ class _TvShowDetailsState extends State<TvShowDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, (List<TvShow>, List<int>, void Function(TvShow), void Function(int), void Function(int, bool))>(
+    return StoreConnector<
+      AppState,
+      (List<TvShow>, List<int>, void Function(TvShow), void Function(int), void Function(int, bool), void Function(Episode, bool))
+    >(
       converter: (store) => (
         store.state.tvShows,
         store.state.watchedEpisodeIds,
         (show) => store.dispatch(SaveTvShowAction(show)),
         (id) => store.dispatch(RemoveTvShowAction(id)),
         (id, archive) => store.dispatch(ToggleArchiveTvShowAction(id, archive)),
+        (episode, watched) => store.dispatch(ToggleEpisodeWatchedAction(widget.tvShowId, episode, watched)),
       ),
       builder: (context, viewData) {
-        final (savedShows, watchedIds, onSaveShow, onRemoveShow, onToggleArchive) = viewData;
+        final (savedShows, watchedIds, onSaveShow, onRemoveShow, onToggleArchive, onToggleEpisodeWatched) = viewData;
 
         final tvShowLocal = savedShows.where((s) => s.id == widget.tvShowId).firstOrNull;
         final isSaved = tvShowLocal != null;
         final isArchived = tvShowLocal?.isArchived ?? false;
 
+        final seasons = _tvShow?.seasons?.where((s) => s.seasonNumber != 0).toList() ?? [];
+        final specials = _tvShow?.seasons?.where((s) => s.seasonNumber == 0).toList() ?? [];
+
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Series Details'),
+            title: const Text('Details'),
             actions: [
               if (isSaved) ...[
                 IconButton(
@@ -103,7 +112,7 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                         title: const Text('Remove Series'),
                         content: const Text('Are you sure you want to remove this series from your watchlist? All progress will be lost.'),
                         actions: [
-                          TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCEL')),
+                          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
                           TextButton(
                             onPressed: () {
                               Navigator.pop(context);
@@ -139,8 +148,6 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Card(
-                            elevation: 4,
-                            shadowColor: Colors.black26,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                             clipBehavior: Clip.antiAlias,
                             child: TvShowPoster(tvShow: _tvShow, width: 110, height: 165),
@@ -185,8 +192,6 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                       ),
                       const SizedBox(height: 12),
                       Card(
-                        elevation: 0,
-                        color: Theme.of(context).colorScheme.surfaceContainerLow,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
@@ -203,8 +208,116 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                           ),
                         ),
                       ),
-                      if (_tvShow?.seasons != null && _tvShow!.seasons!.isNotEmpty) ...[
-                        const SizedBox(height: 24),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          Icon(Icons.percent_outlined, size: 20, color: Theme.of(context).colorScheme.secondary),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Progress',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+                          ),
+                        ],
+                      ),
+                      if (isSaved && _tvShow?.seasons != null && _tvShow!.seasons!.isNotEmpty) ...[
+                        (() {
+                          final nonSpecialsSeasons = _tvShow!.seasons!.where((s) => s.seasonNumber != 0).toList();
+                          final allEpisodes = nonSpecialsSeasons.expand((s) => s.episodes ?? <Episode>[]).toList();
+                          final watchedCount = allEpisodes.where((e) => watchedIds.contains(e.id)).length;
+                          final totalCount = allEpisodes.length;
+                          final progress = totalCount > 0 ? watchedCount / totalCount : 0.0;
+
+                          if (totalCount == 0) return const SizedBox.shrink();
+
+                          Episode? nextEpisode;
+                          nonSpecialsSeasons.sort((a, b) => (a.seasonNumber ?? 0).compareTo(b.seasonNumber ?? 0));
+                          for (var season in nonSpecialsSeasons) {
+                            if (season.episodes == null) continue;
+                            final sortedEpisodes = List<Episode>.from(season.episodes!);
+                            sortedEpisodes.sort((a, b) => (a.episodeNumber ?? 0).compareTo(b.episodeNumber ?? 0));
+                            for (var episode in sortedEpisodes) {
+                              if (!watchedIds.contains(episode.id)) {
+                                nextEpisode = episode;
+                                break;
+                              }
+                            }
+                            if (nextEpisode != null) break;
+                          }
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 12),
+                              WatchingProgressCard(watchedCount: watchedCount, totalCount: totalCount, progress: progress, margin: EdgeInsets.zero),
+                              if (nextEpisode != null) ...[
+                                const SizedBox(height: 16),
+                                Card(
+                                  margin: EdgeInsets.zero,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    'Next to Watch',
+                                                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Theme.of(context).colorScheme.primary,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 6),
+                                                  Text(
+                                                    'S${nextEpisode.seasonNumber.toString().padLeft(2, '0')}E${nextEpisode.episodeNumber.toString().padLeft(2, '0')} - ${nextEpisode.name}',
+                                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Theme.of(context).colorScheme.onSurface,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 16),
+                                        SizedBox(
+                                          width: double.infinity,
+                                          child: FilledButton.tonalIcon(
+                                            style: FilledButton.styleFrom(
+                                              padding: const EdgeInsets.symmetric(vertical: 12),
+                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                            ),
+                                            onPressed: () {
+                                              onToggleEpisodeWatched(nextEpisode!, true);
+                                              Fluttertoast.showToast(
+                                                msg: "Marked S${nextEpisode.seasonNumber}E${nextEpisode.episodeNumber} as watched",
+                                              );
+                                            },
+                                            icon: const Icon(Icons.check_rounded, size: 18),
+                                            label: const Text('Mark as Watched'),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              const SizedBox(height: 24),
+                            ],
+                          );
+                        })(),
+                      ],
+                      if (seasons.isNotEmpty) ...[
+                        if (!isSaved) const SizedBox(height: 24),
                         Row(
                           children: [
                             Icon(Icons.tv_outlined, size: 20, color: Theme.of(context).colorScheme.secondary),
@@ -219,53 +332,55 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                         ),
                         const SizedBox(height: 12),
                         Card(
-                          elevation: 0,
-                          color: Theme.of(context).colorScheme.surfaceContainerLow,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           clipBehavior: Clip.antiAlias,
                           child: Column(
-                            children: _tvShow!.seasons!.where((s) => s.seasonNumber != 0).map((season) {
-                              return SeasonListTile(
-                                key: ValueKey(season.id ?? season.seasonNumber),
-                                tvShowId: widget.tvShowId, 
-                                season: season,
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        if (_tvShow!.seasons!.any((s) => s.seasonNumber == 0)) ...[
-                          const SizedBox(height: 24),
-                          Row(
                             children: [
-                              Icon(Icons.stars_outlined, size: 20, color: Theme.of(context).colorScheme.secondary),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Specials',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
-                              ),
+                              for (int i = 0; i < seasons.length; i++) ...[
+                                if (i > 0) Divider(color: Theme.of(context).colorScheme.surfaceContainerLow, height: 1),
+                                SeasonListTile(
+                                  key: ValueKey(seasons[i].id ?? seasons[i].seasonNumber),
+                                  tvShowId: widget.tvShowId,
+                                  season: seasons[i],
+                                ),
+                              ],
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          Card(
-                            elevation: 0,
-                            color: Theme.of(context).colorScheme.surfaceContainerLow,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                            clipBehavior: Clip.antiAlias,
-                            child: Column(
-                              children: _tvShow!.seasons!.where((s) => s.seasonNumber == 0).map((season) {
-                                return SeasonListTile(
-                                  key: ValueKey(season.id ?? season.seasonNumber),
-                                  tvShowId: widget.tvShowId, 
-                                  season: season,
-                                );
-                              }).toList(),
+                        ),
+                      ],
+                      if (specials.isNotEmpty) ...[
+                        const SizedBox(height: 24),
+                        Row(
+                          children: [
+                            Icon(Icons.stars_outlined, size: 20, color: Theme.of(context).colorScheme.secondary),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Specials',
+                              style: Theme.of(
+                                context,
+                              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
                             ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Card(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          clipBehavior: Clip.antiAlias,
+                          child: Column(
+                            children: [
+                              for (int i = 0; i < specials.length; i++) ...[
+                                if (i > 0) Divider(color: Theme.of(context).colorScheme.surfaceContainerLow, height: 1),
+                                SeasonListTile(
+                                  key: ValueKey(specials[i].id ?? specials[i].seasonNumber),
+                                  tvShowId: widget.tvShowId,
+                                  season: specials[i],
+                                ),
+                              ],
+                            ],
                           ),
-                        ],
-                      ] else if (!_isLoading)
+                        ),
+                      ],
+                      if (_tvShow != null && seasons.isEmpty && specials.isEmpty && !_isLoading)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 20),
                           child: Center(

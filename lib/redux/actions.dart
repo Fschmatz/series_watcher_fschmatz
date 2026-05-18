@@ -1,3 +1,4 @@
+import '../dao/episode_dao.dart';
 import '../entity/app_parameter.dart';
 import '../entity/episode.dart';
 import '../entity/episode_watched.dart';
@@ -30,8 +31,16 @@ class SaveAppParameterAction extends AppAction {
 }
 
 class LoadTvShowsAction extends AppAction {
+  final bool showLoading;
+
+  LoadTvShowsAction({this.showLoading = true});
+
   @override
-  void before() => dispatch(_SetLoadingShowsAction(true));
+  void before() {
+    if (showLoading) {
+      dispatch(_SetLoadingShowsAction(true));
+    }
+  }
 
   @override
   Future<AppState?> reduce() async {
@@ -126,7 +135,7 @@ class RemoveTvShowAction extends AppAction {
 
   @override
   void after() {
-    dispatch(LoadTvShowsAction());
+    dispatch(LoadTvShowsAction(showLoading: false));
     dispatch(LoadWatchedEpisodesAction());
   }
 }
@@ -146,7 +155,7 @@ class ToggleArchiveTvShowAction extends AppAction {
 
   @override
   void after() {
-    dispatch(LoadTvShowsAction());
+    dispatch(LoadTvShowsAction(showLoading: false));
   }
 }
 
@@ -179,7 +188,7 @@ class ToggleEpisodeWatchedAction extends AppAction {
   @override
   void after() {
     dispatch(LoadWatchedEpisodesAction());
-    dispatch(LoadTvShowsAction());
+    dispatch(LoadTvShowsAction(showLoading: false));
   }
 }
 
@@ -209,6 +218,53 @@ class MarkSeasonAsWatchedAction extends AppAction {
   @override
   void after() {
     dispatch(LoadWatchedEpisodesAction());
-    dispatch(LoadTvShowsAction());
+    dispatch(LoadTvShowsAction(showLoading: false));
+  }
+}
+
+class MarkNextEpisodeAsWatchedAction extends AppAction {
+  final int tvShowId;
+
+  MarkNextEpisodeAsWatchedAction(this.tvShowId);
+
+  @override
+  Future<AppState?> reduce() async {
+    final nextEp = await EpisodeDAO.instance.getNextEpisodeToWatch(tvShowId);
+    if (nextEp != null) {
+      await TvShowLocalService().markEpisodeAsWatched(
+        EpisodeWatched(
+          idEpisode: nextEp.id,
+          idTvShow: tvShowId,
+          seasonNumber: nextEp.seasonNumber,
+          episodeNumber: nextEp.episodeNumber,
+          watchDate: DateTime.now().toString(),
+        ),
+      );
+    }
+
+    return null;
+  }
+
+  @override
+  void after() {
+    dispatch(LoadWatchedEpisodesAction());
+    dispatch(LoadTvShowsAction(showLoading: false));
+  }
+}
+
+class SyncSingleTvShowAction extends AppAction {
+  final int tvShowId;
+
+  SyncSingleTvShowAction(this.tvShowId);
+
+  @override
+  Future<AppState?> reduce() async {
+    await TvShowLocalService().downloadAndSaveTvShow(tvShowId);
+    return null;
+  }
+
+  @override
+  void after() {
+    dispatch(LoadTvShowsAction(showLoading: false));
   }
 }

@@ -27,18 +27,57 @@ class Home extends StatelessWidget {
           appBar: AppBar(
             title: Text(AppConstants.appNameHomePage),
             actions: [
-              IconButton(
+              /*  IconButton(
                 icon: const Icon(Icons.search_outlined),
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchPage()));
                 },
-              ),
+              ), */
               PopupMenuButton<int>(
                 icon: const Icon(Icons.more_vert_outlined),
+                color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 itemBuilder: (BuildContext context) => <PopupMenuItem<int>>[
-                  const PopupMenuItem<int>(value: 0, child: Text('Archive')),
-                  const PopupMenuItem<int>(value: 1, child: Text('History')),
-                  const PopupMenuItem<int>(value: 2, child: Text('Settings')),
+                  PopupMenuItem<int>(
+                    value: 3,
+                    child: Row(
+                      children: [
+                        Icon(Icons.search_outlined, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 12),
+                        const Text('Search'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem<int>(
+                    value: 0,
+                    child: Row(
+                      children: [
+                        Icon(Icons.archive_outlined, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 12),
+                        const Text('Archive'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem<int>(
+                    value: 1,
+                    child: Row(
+                      children: [
+                        Icon(Icons.history_rounded, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 12),
+                        const Text('History'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem<int>(
+                    value: 2,
+                    child: Row(
+                      children: [
+                        Icon(Icons.settings_outlined, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 12),
+                        const Text('Settings'),
+                      ],
+                    ),
+                  ),
                 ],
                 onSelected: (int value) {
                   switch (value) {
@@ -50,6 +89,9 @@ class Home extends StatelessWidget {
                       break;
                     case 2:
                       Navigator.push(context, MaterialPageRoute(builder: (context) => const Settings()));
+                      break;
+                    case 3:
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchPage()));
                       break;
                   }
                 },

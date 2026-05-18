@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'genre.dart';
 import 'season.dart';
 
@@ -7,7 +10,6 @@ class TvShow {
   String? originalName;
   String? overview;
   String? posterPath;
-  String? posterImage;
   String? backdropPath;
   String? firstAirDate;
   double? voteAverage;
@@ -20,6 +22,8 @@ class TvShow {
   List<Season>? seasons;
   String? nextEpisodeInfo;
   int? remainingEpisodes;
+  String? _posterImage;
+  Uint8List? _posterBytes;
 
   TvShow({
     this.id,
@@ -27,7 +31,7 @@ class TvShow {
     this.originalName,
     this.overview,
     this.posterPath,
-    this.posterImage,
+    String? posterImage,
     this.backdropPath,
     this.firstAirDate,
     this.voteAverage,
@@ -40,7 +44,26 @@ class TvShow {
     this.seasons,
     this.nextEpisodeInfo,
     this.remainingEpisodes,
-  });
+  }) : _posterImage = posterImage;
+
+  String? get posterImage => _posterImage;
+
+  Uint8List? get posterBytes {
+    if (_posterBytes == null && _posterImage != null) {
+      try {
+        _posterBytes = base64Decode(_posterImage!);
+      } catch (_) {}
+    }
+
+    return _posterBytes;
+  }
+
+  set posterImage(String? value) {
+    if (_posterImage != value) {
+      _posterImage = value;
+      _posterBytes = null;
+    }
+  }
 
   Map<String, dynamic> toMap() {
     return {

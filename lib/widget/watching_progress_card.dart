@@ -15,7 +15,7 @@ class WatchingProgressCard extends StatelessWidget {
     return Container(
       margin: margin ?? const EdgeInsets.fromLTRB(16, 16, 16, 4),
       padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHigh, borderRadius: BorderRadius.circular(20)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -24,19 +24,21 @@ class WatchingProgressCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.insights_rounded, size: 18, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                  Icon(Icons.insights_rounded, size: 18, color: Theme.of(context).colorScheme.onSecondaryContainer),
                   const SizedBox(width: 8),
                   Text(
                     'Watching Progress',
                     style: Theme.of(
                       context,
-                    ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                    ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSecondaryContainer),
                   ),
                 ],
               ),
               Text(
                 '$watchedCount / $totalCount ($progressPercentage%)',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSecondaryContainer),
               ),
             ],
           ),
@@ -46,7 +48,7 @@ class WatchingProgressCard extends StatelessWidget {
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 8,
-              backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.12),
+              backgroundColor: Theme.of(context).colorScheme.onSecondaryContainer.withValues(alpha: 0.12),
               valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
             ),
           ),

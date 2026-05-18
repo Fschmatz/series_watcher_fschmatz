@@ -95,21 +95,21 @@ class _SeasonDetailsPageState extends State<SeasonDetailsPage> {
                           ),
                         ),
                       )
-                    : Column(
+                    : SingleChildScrollView(
                         key: const ValueKey('list_layout'),
-                        children: [
-                          WatchingProgressCard(watchedCount: watchedCount, totalCount: totalCount, progress: progress),
-                          Expanded(
-                            child: Card(
-                              elevation: 0,
-                              color: Theme.of(context).colorScheme.surfaceContainerLow,
+                        child: Column(
+                          children: [
+                            WatchingProgressCard(watchedCount: watchedCount, totalCount: totalCount, progress: progress),
+                            Card(
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                               margin: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                               clipBehavior: Clip.antiAlias,
                               child: ListView.separated(
                                 key: const ValueKey('list'),
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
                                 itemCount: episodes.length,
-                                separatorBuilder: (context, index) => Divider(color: Theme.of(context).colorScheme.surfaceContainerHigh, height: 1),
+                                separatorBuilder: (context, index) => Divider(color: Theme.of(context).colorScheme.surfaceContainerLow, height: 1),
                                 itemBuilder: (context, index) {
                                   final episode = episodes[index];
                                   final isWatched = watchedIds.contains(episode.id);
@@ -138,13 +138,13 @@ class _SeasonDetailsPageState extends State<SeasonDetailsPage> {
                                 },
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
               ),
               if (_isLoading)
                 Container(
-                  color: Theme.of(context).colorScheme.surfaceContainerLow.withOpacity(0.5),
+                  color: Theme.of(context).colorScheme.surfaceContainerLow.withValues(alpha: 0.5),
                   child: const Center(child: CircularProgressIndicator()),
                 ),
             ],

@@ -1,6 +1,9 @@
+import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../entity/tv_show.dart';
+import '../redux/actions.dart';
 import '../util/app_constants.dart';
 import 'tv_show_poster.dart';
 
@@ -26,12 +29,11 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
 
     return Card(
       margin: AppConstants.marginSeriesCards,
-      elevation: 0,
       clipBehavior: Clip.antiAlias,
-      color: Theme.of(context).colorScheme.surfaceContainerLow,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: InkWell(
         onTap: onTap,
+        onLongPress: () => _showBottomSheet(context, tvShow),
         child: Row(
           children: [
             TvShowPoster(tvShow: tvShow, width: 95, height: 135),
@@ -122,6 +124,78 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
           ],
         ),
       ),
+    );
+  }
+
+  void _showBottomSheet(BuildContext context, TvShow tvShow) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) {
+        final hasNextEpisode = tvShow.nextEpisodeInfo != null;
+
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                  child: Text(tvShow.name ?? 'Series Options', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                ),
+                if (hasNextEpisode) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Text(
+                      'Next: ${tvShow.nextEpisodeInfo}',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 12),
+                const Divider(),
+                ListTile(
+                  leading: const Icon(Icons.check_circle_outline_rounded),
+                  title: const Text('Mark next as watched'),
+                  enabled: hasNextEpisode,
+                  onTap: () {
+                    Navigator.pop(context);
+                    if (tvShow.id != null) {
+                      StoreProvider.dispatch(context, MarkNextEpisodeAsWatchedAction(tvShow.id!));
+                      Fluttertoast.showToast(msg: "Marked next episode as watched");
+                    }
+                  },
+                ),
+                ListTile(
+                  leading: Icon(tvShow.isArchived ? Icons.unarchive_outlined : Icons.archive_outlined),
+                  title: Text(tvShow.isArchived ? 'Unarchive series' : 'Archive series'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    if (tvShow.id != null) {
+                      StoreProvider.dispatch(context, ToggleArchiveTvShowAction(tvShow.id!, !tvShow.isArchived));
+                      Fluttertoast.showToast(msg: tvShow.isArchived ? "Series unarchived" : "Series archived");
+                    }
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.sync_rounded),
+                  title: const Text('Sync series'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    if (tvShow.id != null) {
+                      Fluttertoast.showToast(msg: "Syncing ${tvShow.name}...");
+                      StoreProvider.dispatch(context, SyncSingleTvShowAction(tvShow.id!));
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

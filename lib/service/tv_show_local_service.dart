@@ -87,6 +87,12 @@ class TvShowLocalService extends StoreService {
       tvShow.posterImage = await _downloadImageAsBase64(tvShow.posterPath!);
     }
 
+    // Preserve local archived status
+    final localShow = await _tvShowDao.getTvShowById(id);
+    if (localShow != null) {
+      tvShow.isArchived = localShow.isArchived;
+    }
+
     // 2. For each season, get episodes
     if (tvShow.seasons != null) {
       for (var season in tvShow.seasons!) {

@@ -23,12 +23,21 @@ class _AppThemeState extends State<AppTheme> {
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        final lightScheme = lightDynamic ?? ColorScheme.fromSeed(seedColor: Colors.blue);
         final darkScheme = darkDynamic ?? ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark);
 
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(colorScheme: lightDynamic ?? ColorScheme.fromSeed(seedColor: Colors.blue), useMaterial3: true),
-          darkTheme: ThemeData(colorScheme: darkScheme.copyWith(surface: darkScheme.surfaceContainer), useMaterial3: true),
+          theme: ThemeData(
+            colorScheme: lightScheme,
+            useMaterial3: true,
+            cardTheme: CardThemeData(color: lightScheme.surfaceContainerHigh, elevation: 0, surfaceTintColor: Colors.transparent),
+          ),
+          darkTheme: ThemeData(
+            colorScheme: darkScheme.copyWith(surface: darkScheme.surfaceContainerLow),
+            useMaterial3: true,
+            cardTheme: CardThemeData(color: darkScheme.surfaceContainerHigh, elevation: 0, surfaceTintColor: Colors.transparent),
+          ),
           themeMode: EasyDynamicTheme.of(context).themeMode,
           home: const Home(),
         );

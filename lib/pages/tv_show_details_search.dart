@@ -58,6 +58,9 @@ class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
         final (savedShows, onSaveShow) = viewData;
         final isSaved = savedShows.any((s) => s.id == widget.tvShowId);
 
+        final seasons = _tvShow?.seasons?.where((s) => s.seasonNumber != 0).toList() ?? [];
+        final specials = _tvShow?.seasons?.where((s) => s.seasonNumber == 0).toList() ?? [];
+
         return Scaffold(
           appBar: AppBar(title: const Text('Preview')),
           floatingActionButton: (!isSaved && _tvShow != null && !_isSaving)
@@ -105,8 +108,6 @@ class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Card(
-                                elevation: 4,
-                                shadowColor: Colors.black26,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                 clipBehavior: Clip.antiAlias,
                                 child: TvShowPoster(tvShow: _tvShow, width: 110, height: 165),
@@ -151,8 +152,6 @@ class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
                           ),
                           const SizedBox(height: 12),
                           Card(
-                            elevation: 0,
-                            color: Theme.of(context).colorScheme.surfaceContainerLow,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
@@ -170,7 +169,7 @@ class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          if (_tvShow?.seasons != null && _tvShow!.seasons!.isNotEmpty) ...[
+                          if (seasons.isNotEmpty) ...[
                             Row(
                               children: [
                                 Icon(Icons.tv_outlined, size: 20, color: Theme.of(context).colorScheme.secondary),
@@ -185,57 +184,53 @@ class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
                             ),
                             const SizedBox(height: 12),
                             Card(
-                              elevation: 0,
-                              color: Theme.of(context).colorScheme.surfaceContainerLow,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                               clipBehavior: Clip.antiAlias,
                               child: Column(
-                                children: _tvShow!.seasons!
-                                    .where((s) => s.seasonNumber != 0)
-                                    .map(
-                                      (season) => Padding(
-                                        key: ValueKey(season.id ?? season.seasonNumber),
-                                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                        child: SeasonTile(season: season),
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                            ),
-                            if (_tvShow!.seasons!.any((s) => s.seasonNumber == 0)) ...[
-                              const SizedBox(height: 24),
-                              Row(
                                 children: [
-                                  Icon(Icons.stars_outlined, size: 20, color: Theme.of(context).colorScheme.secondary),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Specials',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
-                                  ),
+                                  for (int i = 0; i < seasons.length; i++) ...[
+                                    if (i > 0) Divider(color: Theme.of(context).colorScheme.surfaceContainerLow, height: 1),
+                                    Padding(
+                                      key: ValueKey(seasons[i].id ?? seasons[i].seasonNumber),
+                                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                      child: SeasonTile(season: seasons[i]),
+                                    ),
+                                  ],
                                 ],
                               ),
-                              const SizedBox(height: 12),
-                              Card(
-                                elevation: 0,
-                                color: Theme.of(context).colorScheme.surfaceContainerLow,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                clipBehavior: Clip.antiAlias,
-                                child: Column(
-                                  children: _tvShow!.seasons!
-                                      .where((s) => s.seasonNumber == 0)
-                                      .map(
-                                        (season) => Padding(
-                                          key: ValueKey(season.id ?? season.seasonNumber),
-                                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                          child: SeasonTile(season: season),
-                                        ),
-                                      )
-                                      .toList(),
+                            ),
+                          ],
+                          if (specials.isNotEmpty) ...[
+                            const SizedBox(height: 24),
+                            Row(
+                              children: [
+                                Icon(Icons.stars_outlined, size: 20, color: Theme.of(context).colorScheme.secondary),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Specials',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
                                 ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Card(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              clipBehavior: Clip.antiAlias,
+                              child: Column(
+                                children: [
+                                  for (int i = 0; i < specials.length; i++) ...[
+                                    if (i > 0) Divider(color: Theme.of(context).colorScheme.surfaceContainerLow, height: 1),
+                                    Padding(
+                                      key: ValueKey(specials[i].id ?? specials[i].seasonNumber),
+                                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                      child: SeasonTile(season: specials[i]),
+                                    ),
+                                  ],
+                                ],
                               ),
-                            ],
+                            ),
                           ],
                           const SizedBox(height: 72),
                         ],
@@ -243,7 +238,7 @@ class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
                     ),
                     if (_isSaving)
                       Container(
-                        color: Theme.of(context).colorScheme.surfaceContainerLowest.withOpacity(0.5),
+                        color: Theme.of(context).colorScheme.surfaceContainerLowest.withValues(alpha: 0.5),
                         child: Center(
                           child: Card(
                             margin: const EdgeInsets.all(32),
