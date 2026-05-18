@@ -10,7 +10,6 @@ import '../redux/actions.dart';
 import '../redux/app_state.dart';
 import '../util/app_constants.dart';
 import '../widget/app_parameter_value.dart';
-import 'app_info.dart';
 import 'changelog.dart';
 
 class Settings extends StatefulWidget {
@@ -23,149 +22,247 @@ class Settings extends StatefulWidget {
 class SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
-    Color themeColorApp = Theme.of(context).colorScheme.primary;
-
     return Scaffold(
       appBar: AppBar(title: const Text("Settings")),
       body: ListView(
+        padding: const EdgeInsets.only(bottom: 24),
         children: <Widget>[
           Card(
-            elevation: 1,
-            margin: const EdgeInsets.fromLTRB(16, 20, 16, 25),
-            color: themeColorApp,
-            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-            child: ListTile(
-              title: Text(
-                "${AppConstants.appName} ${AppConstants.appVersion}",
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 17.5, color: Colors.black),
-              ),
-            ),
-          ),
-          ListTile(
-            title: Text(
-              "General",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: themeColorApp),
-            ),
-          ),
-          ListTile(
-            onTap: () => showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return const DialogSelectTheme();
-              },
-            ),
-            leading: const Icon(Icons.brightness_6_outlined),
-            title: const Text("App theme"),
-            subtitle: Text(UtilsFunctions.getThemeStringFormatted(EasyDynamicTheme.of(context).themeMode)),
-          ),
-          /*       const SettingsSwitch(
-              title: "Show album info",
-              subtitle: "Show title and artist on card",
-              parameterKey: "showAlbumInfo",
-              defaultValue: true,
-            ),*/
-          ListTile(
-            title: Text(
-              "Data",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: themeColorApp),
-            ),
-          ),
-          StoreConnector<AppState, ({bool isSyncing, VoidCallback onSync})>(
-            converter: (store) => (
-              isSyncing: store.state.isSyncingShows,
-              onSync: () => store.dispatch(SyncTvShowsAction()),
-            ),
-            builder: (context, viewData) => ListTile(
-              onTap: viewData.isSyncing ? null : () {
-                viewData.onSync();
-                Fluttertoast.showToast(msg: "Synchronizing series...");
-              },
-              leading: viewData.isSyncing 
-                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)) 
-                  : const Icon(Icons.sync),
-              title: const Text("Sync series data"),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            elevation: 0,
+            margin: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+            color: Theme.of(context).colorScheme.primaryContainer,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
+              child: Column(
                 children: [
-                  const Text("Update seasons and episodes for offline use"),
-                  const SizedBox(height: 2),
-                  Row(
-                    children: [
-                      const Text("Last sync: "),
-                      AppParameterValue(parameterKey: AppConstants.lastSyncDateAppParameter),
-                    ],
+                  Text(
+                    AppConstants.appName,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Version ${AppConstants.appVersion}',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.8)),
                   ),
                 ],
               ),
             ),
           ),
-          ListTile(
-            title: Text(
-              "Backup",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: themeColorApp),
-            ),
-          ),
-
-          ListTile(
-            onTap: () async {
-              bool? result = await showDialog<bool>(
-                context: context,
-                builder: (BuildContext context) {
-                  return const DialogBackup(isCreateBackup: true);
-                },
-              );
-
-              if (result == true && context.mounted) {
-                StoreProvider.dispatch<AppState>(context, LoadAppParametersAction());
-              }
-            },
-            leading: const Icon(Icons.save_outlined),
-            title: const Text("Backup now"),
-            subtitle: Row(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Last backup: "),
-                AppParameterValue(parameterKey: AppConstants.lastBackupDateAppParameter),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
+                  child: Text(
+                    "General",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+                  ),
+                ),
+                Card(
+                  elevation: 0,
+                  color: Theme.of(context).colorScheme.surfaceContainerLow,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  clipBehavior: Clip.antiAlias,
+                  child: ListTile(
+                    onTap: () => showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const DialogSelectTheme();
+                      },
+                    ),
+                    leading: const Icon(Icons.brightness_6_outlined),
+                    title: const Text("App theme"),
+                    subtitle: Text(UtilsFunctions.getThemeStringFormatted(EasyDynamicTheme.of(context).themeMode)),
+                  ),
+                ),
               ],
             ),
           ),
-          ListTile(
-            onTap: () async {
-              bool? result = await showDialog<bool>(
-                context: context,
-                builder: (BuildContext context) {
-                  return const DialogBackup(isCreateBackup: false);
-                },
-              );
-
-              if (result == true && context.mounted) {
-                StoreProvider.dispatch<AppState>(context, LoadAppParametersAction());
-                StoreProvider.dispatch<AppState>(context, LoadTvShowsAction());
-                StoreProvider.dispatch<AppState>(context, LoadWatchedEpisodesAction());
-              }
-            },
-            leading: const Icon(Icons.settings_backup_restore_outlined),
-            title: const Text("Restore from backup"),
-          ),
-          ListTile(
-            title: Text(
-              "About",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: themeColorApp),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
+                  child: Text(
+                    "Data",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+                  ),
+                ),
+                Card(
+                  elevation: 0,
+                  color: Theme.of(context).colorScheme.surfaceContainerLow,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  clipBehavior: Clip.antiAlias,
+                  child: StoreConnector<AppState, ({bool isSyncing, VoidCallback onSync})>(
+                    converter: (store) => (isSyncing: store.state.isSyncingShows, onSync: () => store.dispatch(SyncTvShowsAction())),
+                    builder: (context, viewData) => ListTile(
+                      onTap: viewData.isSyncing
+                          ? null
+                          : () {
+                              viewData.onSync();
+                              Fluttertoast.showToast(msg: "Synchronizing series...");
+                            },
+                      leading: viewData.isSyncing
+                          ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                          : const Icon(Icons.sync),
+                      title: const Text("Sync series data"),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text("Update seasons and episodes for offline use"),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              const Text("Last sync: ", style: TextStyle(fontSize: 12)),
+                              AppParameterValue(parameterKey: AppConstants.lastSyncDateAppParameter),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: const Text("App info"),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const AppInfo()));
-            },
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
+                  child: Text(
+                    "Backup",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+                  ),
+                ),
+                Card(
+                  elevation: 0,
+                  color: Theme.of(context).colorScheme.surfaceContainerLow,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    children: [
+                      ListTile(
+                        onTap: () async {
+                          bool? result = await showDialog<bool>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return const DialogBackup(isCreateBackup: true);
+                            },
+                          );
+
+                          if (result == true && context.mounted) {
+                            StoreProvider.dispatch<AppState>(context, LoadAppParametersAction());
+                          }
+                        },
+                        leading: const Icon(Icons.save_outlined),
+                        title: const Text("Backup now"),
+                        subtitle: Row(
+                          children: [
+                            const Text("Last backup: ", style: TextStyle(fontSize: 12)),
+                            AppParameterValue(parameterKey: AppConstants.lastBackupDateAppParameter),
+                          ],
+                        ),
+                      ),
+                      Divider(color: Theme.of(context).colorScheme.surfaceContainerHigh, height: 1),
+                      ListTile(
+                        onTap: () async {
+                          bool? result = await showDialog<bool>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return const DialogBackup(isCreateBackup: false);
+                            },
+                          );
+
+                          if (result == true && context.mounted) {
+                            StoreProvider.dispatch<AppState>(context, LoadAppParametersAction());
+                            StoreProvider.dispatch<AppState>(context, LoadTvShowsAction());
+                            StoreProvider.dispatch<AppState>(context, LoadWatchedEpisodesAction());
+                          }
+                        },
+                        leading: const Icon(Icons.settings_backup_restore_outlined),
+                        title: const Text("Restore from backup"),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-          ListTile(
-            leading: const Icon(Icons.article_outlined),
-            title: const Text("Changelog"),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const Changelog()));
-            },
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
+                  child: Text(
+                    "About",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+                  ),
+                ),
+                Card(
+                  elevation: 0,
+                  color: Theme.of(context).colorScheme.surfaceContainerLow,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  clipBehavior: Clip.antiAlias,
+                  child: ListTile(
+                    leading: const Icon(Icons.article_outlined),
+                    title: const Text("Changelog"),
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const Changelog()));
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
+                  child: Text(
+                    "Source Code",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+                  ),
+                ),
+                Card(
+                  elevation: 0,
+                  color: Theme.of(context).colorScheme.surfaceContainerLow,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  clipBehavior: Clip.antiAlias,
+                  child: ListTile(
+                    onTap: () {
+                      UtilsFunctions.openGithubRepository();
+                    },
+                    leading: const Icon(Icons.open_in_new_outlined),
+                    title: const Text("View on GitHub"),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

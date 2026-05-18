@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppConstants {
   static const String backupFileName = "series_watcher_backup";
-  static const String appVersion = "0.8.0";
+  static const String appVersion = "1.0.0";
   static const String appName = "Series Watcher Fschmatz";
   static const String appNameHomePage = "Series Watcher";
   static const String repositoryLink = "https://github.com/Fschmatz/playlist_saver";
@@ -14,6 +14,7 @@ class AppConstants {
       '''
 $appVersion
 - Add remaining episodes
+- Material Expressive Design
 - UI changes
 ''';
 

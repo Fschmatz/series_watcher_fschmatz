@@ -48,6 +48,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 final e = item.episodeNumber.toString().padLeft(2, '0');
 
                 return ListTile(
+                  key: ValueKey("${item.tvShowName}_${item.seasonNumber}_${item.episodeNumber}"),
                   title: Text(item.tvShowName, style: const TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: Text('S${s}E$e - ${item.episodeName}'),
                   trailing: Text(UtilsFunctions.formatDate(item.watchDate)),

@@ -7,6 +7,7 @@ import '../redux/actions.dart';
 import '../redux/app_state.dart';
 import '../service/tv_service.dart';
 import '../util/utils_functions.dart';
+import '../widget/metadata_badge.dart';
 import '../widget/season_tile.dart';
 import '../widget/tv_show_poster.dart';
 
@@ -52,10 +53,7 @@ class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, (List<TvShow>, Future<void> Function(TvShow))>(
-      converter: (store) => (
-        store.state.tvShows,
-        (show) => store.dispatchAndWait(SaveTvShowAction(show)),
-      ),
+      converter: (store) => (store.state.tvShows, (show) => store.dispatchAndWait(SaveTvShowAction(show))),
       builder: (context, viewData) {
         final (savedShows, onSaveShow) = viewData;
         final isSaved = savedShows.any((s) => s.id == widget.tvShowId);
@@ -87,67 +85,184 @@ class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
                   label: const Text("Save Show"),
                 )
               : null,
-          body: (_isLoading || _isSaving)
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const CircularProgressIndicator(),
-                      if (_isSaving) ...[
-                        const SizedBox(height: 16),
-                        Text(
-                          'Saving show details...',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                      ],
-                    ],
-                  ),
-                )
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(_tvShow?.name ?? '', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 16),
-                      Row(
+          body: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Stack(
+                  children: [
+                    SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: TvShowPoster(tvShow: _tvShow, width: 120),
+                          Text(
+                            _tvShow?.name ?? '',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Rating: ${_tvShow?.voteAverage?.toStringAsFixed(1)}', style: Theme.of(context).textTheme.titleMedium),
-                                Text('Status: ${_tvShow?.status ?? ''}'),
-                                Text('First Air: ${UtilsFunctions.formatDate(_tvShow?.firstAirDate)}'),
-                                Text('Seasons: ${_tvShow?.numberOfSeasons ?? ''}'),
-                              ],
+                          const SizedBox(height: 16),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Card(
+                                elevation: 4,
+                                shadowColor: Colors.black26,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                clipBehavior: Clip.antiAlias,
+                                child: TvShowPoster(tvShow: _tvShow, width: 110, height: 165),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: SizedBox(
+                                  height: 165,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      MetadataBadge(
+                                        icon: Icons.star_rounded,
+                                        label: 'Rating',
+                                        value: _tvShow?.voteAverage != null ? '${_tvShow!.voteAverage!.toStringAsFixed(1)} / 10' : 'N/A',
+                                      ),
+                                      MetadataBadge(icon: Icons.info_outline, label: 'Status', value: _tvShow?.status ?? 'Unknown'),
+                                      MetadataBadge(
+                                        icon: Icons.calendar_today_outlined,
+                                        label: 'First Air',
+                                        value: UtilsFunctions.formatDate(_tvShow?.firstAirDate),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          Row(
+                            children: [
+                              Icon(Icons.subject_rounded, size: 20, color: Theme.of(context).colorScheme.secondary),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Overview',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Card(
+                            elevation: 0,
+                            color: Theme.of(context).colorScheme.surfaceContainerLow,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _tvShow?.overview ?? 'No overview available',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.5),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
+                          const SizedBox(height: 24),
+                          if (_tvShow?.seasons != null && _tvShow!.seasons!.isNotEmpty) ...[
+                            Row(
+                              children: [
+                                Icon(Icons.tv_outlined, size: 20, color: Theme.of(context).colorScheme.secondary),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Seasons',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Card(
+                              elevation: 0,
+                              color: Theme.of(context).colorScheme.surfaceContainerLow,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              clipBehavior: Clip.antiAlias,
+                              child: Column(
+                                children: _tvShow!.seasons!
+                                    .where((s) => s.seasonNumber != 0)
+                                    .map(
+                                      (season) => Padding(
+                                        key: ValueKey(season.id ?? season.seasonNumber),
+                                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                        child: SeasonTile(season: season),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ),
+                            if (_tvShow!.seasons!.any((s) => s.seasonNumber == 0)) ...[
+                              const SizedBox(height: 24),
+                              Row(
+                                children: [
+                                  Icon(Icons.stars_outlined, size: 20, color: Theme.of(context).colorScheme.secondary),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Specials',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Card(
+                                elevation: 0,
+                                color: Theme.of(context).colorScheme.surfaceContainerLow,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                clipBehavior: Clip.antiAlias,
+                                child: Column(
+                                  children: _tvShow!.seasons!
+                                      .where((s) => s.seasonNumber == 0)
+                                      .map(
+                                        (season) => Padding(
+                                          key: ValueKey(season.id ?? season.seasonNumber),
+                                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                          child: SeasonTile(season: season),
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                              ),
+                            ],
+                          ],
+                          const SizedBox(height: 72),
                         ],
                       ),
-                      const SizedBox(height: 24),
-                      Text('Overview', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      Text(_tvShow?.overview ?? 'No overview available'),
-                      const SizedBox(height: 24),
-                      if (_tvShow?.seasons != null && _tvShow!.seasons!.isNotEmpty) ...[
-                        Text('Seasons', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 8),
-                        Column(children: _tvShow!.seasons!.where((s) => s.seasonNumber != 0).map((season) => SeasonTile(season: season)).toList()),
-                        if (_tvShow!.seasons!.any((s) => s.seasonNumber == 0)) ...[
-                          const SizedBox(height: 24),
-                          Text('Specials', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 8),
-                          Column(children: _tvShow!.seasons!.where((s) => s.seasonNumber == 0).map((season) => SeasonTile(season: season)).toList()),
-                        ],
-                      ],
-                    ],
-                  ),
+                    ),
+                    if (_isSaving)
+                      Container(
+                        color: Theme.of(context).colorScheme.surfaceContainerLowest.withOpacity(0.5),
+                        child: Center(
+                          child: Card(
+                            margin: const EdgeInsets.all(32),
+                            color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                            child: Padding(
+                              padding: const EdgeInsets.all(24.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const CircularProgressIndicator(),
+                                  const SizedBox(height: 16),
+                                  Text('Saving...', style: Theme.of(context).textTheme.titleMedium),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
         );
       },
