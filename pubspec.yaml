@@ -1,7 +1,7 @@
 name: series_watcher_fschmatz
 description: "A Flutter project to track series using TMDB API"
 publish_to: 'none'
-version: 1.2.0
+version: 1.2.1
 
 environment:
   sdk: ^3.10.8

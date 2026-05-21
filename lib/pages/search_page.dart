@@ -87,8 +87,6 @@ class _SearchPageState extends State<SearchPage> {
     return StoreConnector<AppState, (List<TvShow>, void Function(TvShow))>(
       converter: (store) => (store.state.tvShows, (show) => store.dispatch(SaveTvShowAction(show))),
       builder: (context, viewData) {
-        final (savedShows, onSaveShow) = viewData;
-
         return Scaffold(
           appBar: AppBar(
             title: TextField(

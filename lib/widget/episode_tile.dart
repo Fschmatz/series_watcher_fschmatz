@@ -66,6 +66,7 @@ class EpisodeTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (episode.airDate != null || (episode.runtime != null && episode.runtime! > 0)) ...[
+            const SizedBox(height: 4),
             Row(
               children: [
                 if (episode.airDate != null) ...[

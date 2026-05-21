@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import '../entity/episode.dart';
-import '../entity/season.dart';
 import '../entity/tv_show.dart';
 import '../redux/actions.dart';
 import '../redux/app_state.dart';
@@ -26,7 +25,6 @@ class TvShowDetails extends StatefulWidget {
 
 class _TvShowDetailsState extends State<TvShowDetails> {
   TvShow? _tvShow;
-  List<Season> _seasons = [];
   bool _isLoading = true;
 
   @override
