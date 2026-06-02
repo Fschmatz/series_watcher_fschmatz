@@ -35,6 +35,7 @@ class TvShowLocalService extends StoreService {
           final seasonNum = (nextEp.seasonNumber ?? 0).toString().padLeft(2, '0');
           final epNum = (nextEp.episodeNumber ?? 0).toString().padLeft(2, '0');
           show.nextEpisodeInfo = 'S${seasonNum}E$epNum - ${nextEp.name}';
+          show.nextEpisodeRuntime = nextEp.runtime;
         }
         show.remainingEpisodes = await _episodeDao.getRemainingEpisodesCount(show.id!);
       }
@@ -161,5 +162,13 @@ class TvShowLocalService extends StoreService {
   Future<List<HistoryItem>> getHistoryLastTwoMonths() async {
     final maps = await _episodeWatchedDao.getHistoryLastTwoMonths();
     return maps.map((m) => HistoryItem.fromMap(m)).toList();
+  }
+
+  Future<int> getWatchedMinutesCurrentMonth() async {
+    return await _episodeWatchedDao.getWatchedMinutesCurrentMonth();
+  }
+
+  Future<int> getWatchedMinutesCurrentYear() async {
+    return await _episodeWatchedDao.getWatchedMinutesCurrentYear();
   }
 }

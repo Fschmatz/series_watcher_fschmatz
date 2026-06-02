@@ -29,6 +29,7 @@ class ArchivePage extends StatelessWidget {
             duration: const Duration(milliseconds: 300),
             transitionBuilder: (child, animation, secondaryAnimation) {
               return FadeThroughTransition(
+                fillColor: Colors.transparent,
                 animation: animation,
                 secondaryAnimation: secondaryAnimation,
                 child: child,
@@ -77,61 +78,57 @@ class ArchivePage extends StatelessWidget {
                           ),
                         ),
                       )
-                    : Column(
+                    : ListView.builder(
                         key: const ValueKey('list_layout'),
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.all(16.0),
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primaryContainer,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.inventory_2_outlined,
-                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    archivedShows.length == 1
-                                        ? '1 series archived'
-                                        : '${archivedShows.length} series archived',
-                                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                        ),
+                        itemCount: archivedShows.length + 1,
+                        padding: const EdgeInsets.only(bottom: 16),
+                        itemBuilder: (context, index) {
+                          if (index == 0) {
+                            return Container(
+                              margin: const EdgeInsets.all(16.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.inventory_2_outlined,
+                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                    size: 20,
                                   ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      archivedShows.length == 1
+                                          ? '1 series archived'
+                                          : '${archivedShows.length} series archived',
+                                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                          ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          
+                          final tvShow = archivedShows[index - 1];
+                          return TvShowCard(
+                            key: ValueKey(tvShow.id),
+                            tvShow: tvShow,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TvShowDetails(tvShowId: tvShow.id!),
                                 ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: ListView.builder(
-                              key: const ValueKey('list'),
-                              itemCount: archivedShows.length,
-                              padding: const EdgeInsets.only(bottom: 16),
-                              itemBuilder: (context, index) {
-                                final tvShow = archivedShows[index];
-                                return TvShowCard(
-                                  key: ValueKey(tvShow.id),
-                                  tvShow: tvShow,
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => TvShowDetails(tvShowId: tvShow.id!),
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ],
+                              );
+                            },
+                          );
+                        },
                       ),
           ),
         );

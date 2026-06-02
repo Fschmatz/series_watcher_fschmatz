@@ -30,7 +30,6 @@ class SettingsState extends State<Settings> {
           Card(
             margin: const EdgeInsets.fromLTRB(16, 16, 16, 24),
             color: Theme.of(context).colorScheme.primaryContainer,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
               child: Column(
@@ -44,7 +43,9 @@ class SettingsState extends State<Settings> {
                   const SizedBox(height: 4),
                   Text(
                     'Version ${AppConstants.appVersion}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.8)),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.8)),
                   ),
                 ],
               ),
@@ -65,7 +66,6 @@ class SettingsState extends State<Settings> {
                   ),
                 ),
                 Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                   clipBehavior: Clip.antiAlias,
                   child: ListTile(
                     onTap: () => showDialog(
@@ -97,7 +97,6 @@ class SettingsState extends State<Settings> {
                   ),
                 ),
                 Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                   clipBehavior: Clip.antiAlias,
                   child: StoreConnector<AppState, ({bool isSyncing, VoidCallback onSync})>(
                     converter: (store) => (isSyncing: store.state.isSyncingShows, onSync: () => store.dispatch(SyncTvShowsAction())),
@@ -146,7 +145,6 @@ class SettingsState extends State<Settings> {
                   ),
                 ),
                 Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                   clipBehavior: Clip.antiAlias,
                   child: Column(
                     children: [
@@ -172,7 +170,7 @@ class SettingsState extends State<Settings> {
                           ],
                         ),
                       ),
-                      Divider(color: Theme.of(context).colorScheme.surfaceContainerLow, height: 1),
+                      Divider(),
                       ListTile(
                         onTap: () async {
                           bool? result = await showDialog<bool>(
@@ -212,7 +210,6 @@ class SettingsState extends State<Settings> {
                   ),
                 ),
                 Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                   clipBehavior: Clip.antiAlias,
                   child: ListTile(
                     leading: const Icon(Icons.article_outlined),
@@ -240,7 +237,6 @@ class SettingsState extends State<Settings> {
                   ),
                 ),
                 Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                   clipBehavior: Clip.antiAlias,
                   child: ListTile(
                     onTap: () {

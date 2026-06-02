@@ -30,14 +30,13 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
     return Card(
       margin: AppConstants.marginSeriesCards,
       clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: InkWell(
         onTap: onTap,
         onLongPress: () => _showBottomSheet(context, tvShow),
         child: Row(
           children: [
-            TvShowPoster(tvShow: tvShow, width: 95, height: 135),
-            const SizedBox(width: 16),
+            TvShowPoster(tvShow: tvShow, width: 104, height: 155),
+            const SizedBox(width: 12),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 12, 12, 12),
@@ -95,8 +94,23 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
                         ],
                       ),
                     ],
+                    if (tvShow.nextEpisodeRuntime != null && tvShow.nextEpisodeRuntime! > 0) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(Icons.access_time_rounded, size: 14, color: Theme.of(context).colorScheme.primary),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${tvShow.nextEpisodeRuntime} min',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ],
                     if (tvShow.remainingEpisodes != null && tvShow.remainingEpisodes! > 0) ...[
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: BorderRadius.circular(20)),
@@ -131,7 +145,6 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
     showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         final hasNextEpisode = tvShow.nextEpisodeInfo != null;
 

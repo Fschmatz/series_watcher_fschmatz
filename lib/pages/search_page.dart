@@ -115,7 +115,12 @@ class _SearchPageState extends State<SearchPage> {
           body: PageTransitionSwitcher(
             duration: const Duration(milliseconds: 300),
             transitionBuilder: (child, animation, secondaryAnimation) {
-              return FadeThroughTransition(animation: animation, secondaryAnimation: secondaryAnimation, child: child);
+              return FadeThroughTransition(
+                fillColor: Colors.transparent,
+                animation: animation,
+                secondaryAnimation: secondaryAnimation,
+                child: child,
+              );
             },
             child: _isSearching
                 ? _isLoading

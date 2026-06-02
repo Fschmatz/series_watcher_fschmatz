@@ -146,7 +146,6 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Card(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                             clipBehavior: Clip.antiAlias,
                             child: TvShowPoster(tvShow: _tvShow, width: 110, height: 165),
                           ),
@@ -190,7 +189,6 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                       ),
                       const SizedBox(height: 12),
                       Card(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
@@ -253,7 +251,6 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                                 const SizedBox(height: 16),
                                 Card(
                                   margin: EdgeInsets.zero,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                   child: Padding(
                                     padding: const EdgeInsets.all(16.0),
                                     child: Column(
@@ -330,12 +327,11 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                         ),
                         const SizedBox(height: 12),
                         Card(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           clipBehavior: Clip.antiAlias,
                           child: Column(
                             children: [
                               for (int i = 0; i < seasons.length; i++) ...[
-                                if (i > 0) Divider(color: Theme.of(context).colorScheme.surfaceContainerLow, height: 1),
+                                if (i > 0) Divider(),
                                 SeasonListTile(
                                   key: ValueKey(seasons[i].id ?? seasons[i].seasonNumber),
                                   tvShowId: widget.tvShowId,
@@ -362,12 +358,11 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                         ),
                         const SizedBox(height: 12),
                         Card(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           clipBehavior: Clip.antiAlias,
                           child: Column(
                             children: [
                               for (int i = 0; i < specials.length; i++) ...[
-                                if (i > 0) Divider(color: Theme.of(context).colorScheme.surfaceContainerLow, height: 1),
+                                if (i > 0) Divider(),
                                 SeasonListTile(
                                   key: ValueKey(specials[i].id ?? specials[i].seasonNumber),
                                   tvShowId: widget.tvShowId,

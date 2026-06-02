@@ -16,7 +16,6 @@ class TvShowCardSearch extends StatelessWidget {
     return Card(
       margin: AppConstants.marginSeriesCards,
       clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: InkWell(
         onTap: onTap,
         child: Row(

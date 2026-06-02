@@ -21,6 +21,7 @@ class TvShow {
   List<Genre>? genres;
   List<Season>? seasons;
   String? nextEpisodeInfo;
+  int? nextEpisodeRuntime;
   int? remainingEpisodes;
   String? _posterImage;
   Uint8List? _posterBytes;
@@ -43,6 +44,7 @@ class TvShow {
     this.genres,
     this.seasons,
     this.nextEpisodeInfo,
+    this.nextEpisodeRuntime,
     this.remainingEpisodes,
   }) : _posterImage = posterImage;
 

@@ -69,7 +69,12 @@ class _SeasonDetailsPageState extends State<SeasonDetailsPage> {
               PageTransitionSwitcher(
                 duration: const Duration(milliseconds: 300),
                 transitionBuilder: (child, animation, secondaryAnimation) {
-                  return FadeThroughTransition(animation: animation, secondaryAnimation: secondaryAnimation, child: child);
+                  return FadeThroughTransition(
+                    fillColor: Colors.transparent,
+                    animation: animation,
+                    secondaryAnimation: secondaryAnimation,
+                    child: child,
+                  );
                 },
                 child: episodes.isEmpty
                     ? Center(
@@ -101,7 +106,6 @@ class _SeasonDetailsPageState extends State<SeasonDetailsPage> {
                           children: [
                             WatchingProgressCard(watchedCount: watchedCount, totalCount: totalCount, progress: progress),
                             Card(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                               margin: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                               clipBehavior: Clip.antiAlias,
                               child: ListView.separated(
@@ -109,7 +113,7 @@ class _SeasonDetailsPageState extends State<SeasonDetailsPage> {
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: episodes.length,
-                                separatorBuilder: (context, index) => Divider(color: Theme.of(context).colorScheme.surfaceContainerLow, height: 1),
+                                separatorBuilder: (context, index) => Divider(),
                                 itemBuilder: (context, index) {
                                   final episode = episodes[index];
                                   final isWatched = watchedIds.contains(episode.id);

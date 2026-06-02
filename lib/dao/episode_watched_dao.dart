@@ -74,4 +74,35 @@ class EpisodeWatchedDAO {
 
     return await db.rawQuery(sql, [sixtyDaysAgo]);
   }
+  Future<int> getWatchedMinutesCurrentMonth() async {
+    Database db = await DatabaseHelper.instance.database;
+    final now = DateTime.now();
+    final firstDayOfMonth = DateTime(now.year, now.month, 1).toIso8601String();
+
+    final sql = '''
+      SELECT SUM(e.runtime) as total
+      FROM ${DatabaseHelper.tableEpisodesWatched} ew
+      INNER JOIN ${DatabaseHelper.tableEpisodes} e ON e.id = ew.id_episode
+      WHERE ew.watch_date >= ?
+    ''';
+
+    final result = await db.rawQuery(sql, [firstDayOfMonth]);
+    return (result.first['total'] as int?) ?? 0;
+  }
+
+  Future<int> getWatchedMinutesCurrentYear() async {
+    Database db = await DatabaseHelper.instance.database;
+    final now = DateTime.now();
+    final firstDayOfYear = DateTime(now.year, 1, 1).toIso8601String();
+
+    final sql = '''
+      SELECT SUM(e.runtime) as total
+      FROM ${DatabaseHelper.tableEpisodesWatched} ew
+      INNER JOIN ${DatabaseHelper.tableEpisodes} e ON e.id = ew.id_episode
+      WHERE ew.watch_date >= ?
+    ''';
+
+    final result = await db.rawQuery(sql, [firstDayOfYear]);
+    return (result.first['total'] as int?) ?? 0;
+  }
 }

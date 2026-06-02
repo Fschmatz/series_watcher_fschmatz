@@ -36,7 +36,6 @@ class Home extends StatelessWidget {
               PopupMenuButton<int>(
                 icon: const Icon(Icons.more_vert_outlined),
                 color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 itemBuilder: (BuildContext context) => <PopupMenuItem<int>>[
                   PopupMenuItem<int>(
                     value: 3,
@@ -101,7 +100,12 @@ class Home extends StatelessWidget {
           body: PageTransitionSwitcher(
             duration: const Duration(milliseconds: 300),
             transitionBuilder: (child, animation, secondaryAnimation) {
-              return FadeThroughTransition(animation: animation, secondaryAnimation: secondaryAnimation, child: child);
+              return FadeThroughTransition(
+                fillColor: Colors.transparent,
+                animation: animation,
+                secondaryAnimation: secondaryAnimation,
+                child: child,
+              );
             },
             child: isLoading
                 ? const Center(key: ValueKey('loading'), child: CircularProgressIndicator())
@@ -112,6 +116,7 @@ class Home extends StatelessWidget {
                     itemCount: tvShows.length,
                     itemBuilder: (context, index) {
                       final tvShow = tvShows[index];
+
                       return TvShowCard(
                         key: ValueKey(tvShow.id),
                         tvShow: tvShow,

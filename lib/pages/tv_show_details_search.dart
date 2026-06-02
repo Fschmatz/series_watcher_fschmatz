@@ -108,7 +108,6 @@ class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Card(
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                 clipBehavior: Clip.antiAlias,
                                 child: TvShowPoster(tvShow: _tvShow, width: 110, height: 165),
                               ),
@@ -152,7 +151,6 @@ class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
                           ),
                           const SizedBox(height: 12),
                           Card(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
                               child: Column(
@@ -184,12 +182,11 @@ class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
                             ),
                             const SizedBox(height: 12),
                             Card(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                               clipBehavior: Clip.antiAlias,
                               child: Column(
                                 children: [
                                   for (int i = 0; i < seasons.length; i++) ...[
-                                    if (i > 0) Divider(color: Theme.of(context).colorScheme.surfaceContainerLow, height: 1),
+                                    if (i > 0) Divider(),
                                     Padding(
                                       key: ValueKey(seasons[i].id ?? seasons[i].seasonNumber),
                                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -216,12 +213,11 @@ class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
                             ),
                             const SizedBox(height: 12),
                             Card(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                               clipBehavior: Clip.antiAlias,
                               child: Column(
                                 children: [
                                   for (int i = 0; i < specials.length; i++) ...[
-                                    if (i > 0) Divider(color: Theme.of(context).colorScheme.surfaceContainerLow, height: 1),
+                                    if (i > 0) Divider(),
                                     Padding(
                                       key: ValueKey(specials[i].id ?? specials[i].seasonNumber),
                                       padding: const EdgeInsets.symmetric(horizontal: 16.0),

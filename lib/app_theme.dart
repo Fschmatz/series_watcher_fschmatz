@@ -26,18 +26,42 @@ class _AppThemeState extends State<AppTheme> {
         final lightScheme = lightDynamic ?? ColorScheme.fromSeed(seedColor: Colors.blue);
         final darkScheme = darkDynamic ?? ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark);
 
+        ThemeData buildTheme(ColorScheme colorScheme) {
+          return ThemeData(
+            colorScheme: colorScheme,
+            useMaterial3: true,
+            scaffoldBackgroundColor: colorScheme.surfaceContainerLow,
+            appBarTheme: AppBarThemeData(backgroundColor: colorScheme.surfaceContainerLow),
+            dividerTheme: DividerThemeData(color: colorScheme.surfaceContainerLow, space: 1),
+            cardTheme: CardThemeData(
+              color: colorScheme.surfaceContainerHigh,
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            ),
+            dialogTheme: DialogThemeData(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28))),
+            bottomSheetTheme: BottomSheetThemeData(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
+              backgroundColor: colorScheme.surfaceContainer,
+            ),
+            popupMenuTheme: PopupMenuThemeData(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), elevation: 3),
+            inputDecorationTheme: InputDecorationTheme(
+              filled: true,
+              fillColor: colorScheme.surfaceContainerHigh,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(28), borderSide: BorderSide.none),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(28), borderSide: BorderSide.none),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(28),
+                borderSide: BorderSide(color: colorScheme.primary, width: 2),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            ),
+          );
+        }
+
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            colorScheme: lightScheme,
-            useMaterial3: true,
-            cardTheme: CardThemeData(color: lightScheme.surfaceContainerHigh, elevation: 0, surfaceTintColor: Colors.transparent),
-          ),
-          darkTheme: ThemeData(
-            colorScheme: darkScheme.copyWith(surface: darkScheme.surfaceContainerLow),
-            useMaterial3: true,
-            cardTheme: CardThemeData(color: darkScheme.surfaceContainerHigh, elevation: 0, surfaceTintColor: Colors.transparent),
-          ),
+          theme: buildTheme(lightScheme),
+          darkTheme: buildTheme(darkScheme),
           themeMode: EasyDynamicTheme.of(context).themeMode,
           home: const Home(),
         );
