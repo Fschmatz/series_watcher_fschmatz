@@ -9,7 +9,7 @@ class AppConstants {
   static const String lastSyncDateAppParameter = "lastSyncDate";
 
   // STRINGS
-  static const String appVersion = "1.2.2";
+  static const String appVersion = "1.2.3";
   static const String backupFileName = "series_watcher_backup";
   static const String appName = "Series Watcher Fschmatz";
   static const String appNameHomePage = "Series Watcher";
@@ -20,6 +20,7 @@ $appVersion
 - Bottom sheet onHold
 - History page updates
 - Add episode duration on home cards
+- UI changes
 - Fix bugs
 ''';
 

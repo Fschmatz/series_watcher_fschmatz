@@ -10,8 +10,9 @@ import 'tv_show_poster.dart';
 class TvShowCard extends StatefulWidget {
   final TvShow tvShow;
   final VoidCallback? onTap;
+  final bool isFromArchive;
 
-  const TvShowCard({super.key, required this.tvShow, this.onTap});
+  const TvShowCard({super.key, required this.tvShow, this.onTap, this.isFromArchive = false});
 
   @override
   State<TvShowCard> createState() => _TvShowCardState();
@@ -35,8 +36,8 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
         onLongPress: () => _showBottomSheet(context, tvShow),
         child: Row(
           children: [
-            TvShowPoster(tvShow: tvShow, width: 104, height: 155),
-            const SizedBox(width: 12),
+            TvShowPoster(tvShow: tvShow, width: widget.isFromArchive ? 68 : 95, height: widget.isFromArchive ? 102 : 135),
+            const SizedBox(width: 10),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 12, 12, 12),
@@ -52,30 +53,16 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        if (tvShow.voteAverage != null && tvShow.voteAverage! > 0) ...[
-                          Icon(Icons.star_rounded, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
-                          const SizedBox(width: 4),
-                          Text(
-                            tvShow.voteAverage!.toStringAsFixed(1),
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurfaceVariant),
-                          ),
-                          const SizedBox(width: 12),
-                        ],
-                        if (tvShow.status != null)
-                          Text(
-                            tvShow.status!,
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.w600),
-                          ),
-                      ],
-                    ),
-                    if (tvShow.nextEpisodeInfo != null) ...[
+                    if (widget.isFromArchive && tvShow.status != null) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        tvShow.status!,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                    if (!widget.isFromArchive && tvShow.nextEpisodeInfo != null) ...[
                       const SizedBox(height: 8),
                       Row(
                         children: [
@@ -94,7 +81,7 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
                         ],
                       ),
                     ],
-                    if (tvShow.nextEpisodeRuntime != null && tvShow.nextEpisodeRuntime! > 0) ...[
+                    if (!widget.isFromArchive && tvShow.nextEpisodeRuntime != null && tvShow.nextEpisodeRuntime! > 0) ...[
                       const SizedBox(height: 8),
                       Row(
                         children: [

@@ -31,7 +31,7 @@ class _AppThemeState extends State<AppTheme> {
             colorScheme: colorScheme,
             useMaterial3: true,
             scaffoldBackgroundColor: colorScheme.surfaceContainerLow,
-            appBarTheme: AppBarThemeData(backgroundColor: colorScheme.surfaceContainerLow),
+            appBarTheme: AppBarThemeData(backgroundColor: colorScheme.surfaceContainerLow, elevation: 0),
             dividerTheme: DividerThemeData(color: colorScheme.surfaceContainerLow, space: 1),
             cardTheme: CardThemeData(
               color: colorScheme.surfaceContainerHigh,

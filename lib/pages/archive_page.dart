@@ -119,6 +119,7 @@ class ArchivePage extends StatelessWidget {
                           return TvShowCard(
                             key: ValueKey(tvShow.id),
                             tvShow: tvShow,
+                            isFromArchive: true,
                             onTap: () {
                               Navigator.push(
                                 context,
