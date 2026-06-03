@@ -13,15 +13,10 @@ class ArchivePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, (List<TvShow>, bool)>(
-      converter: (store) => (
-        selectArchivedTvShows(),
-        store.state.isLoadingShows,
-      ),
-      builder: (context, viewData) {
-        final (archivedShows, isLoading) = viewData;
+    final archivedShows = context.select(selectArchivedTvShows);
+    final isLoading = context.select((state) => state.isLoadingShows);
 
-        return Scaffold(
+    return Scaffold(
           appBar: AppBar(
             title: const Text('Archive'),
           ),
@@ -133,7 +128,5 @@ class ArchivePage extends StatelessWidget {
                       ),
           ),
         );
-      },
-    );
   }
 }

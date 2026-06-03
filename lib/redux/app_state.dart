@@ -1,3 +1,6 @@
+import 'package:async_redux/async_redux.dart';
+import 'package:flutter/widgets.dart';
+
 import '../entity/app_parameter.dart';
 import '../entity/tv_show.dart';
 
@@ -39,4 +42,11 @@ class AppState {
       isSyncingShows: isSyncingShows ?? this.isSyncingShows,
     );
   }
+}
+
+extension BuildContextExtension on BuildContext {
+  AppState get state => getState<AppState>();
+  AppState read() => getRead<AppState>();
+  R select<R>(R Function(AppState state) selector) => getSelect<AppState, R>(selector);
+  R? event<R>(Evt<R> Function(AppState state) selector) => getEvent<AppState, R>(selector);
 }

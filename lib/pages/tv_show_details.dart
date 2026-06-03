@@ -278,6 +278,33 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                                                       color: Theme.of(context).colorScheme.onSurface,
                                                     ),
                                                   ),
+                                                  if (nextEpisode.runtime != null && nextEpisode.runtime! > 0) ...[
+                                                    const SizedBox(height: 6),
+                                                    Row(
+                                                      children: [
+                                                        Icon(Icons.access_time_rounded, size: 14, color: Theme.of(context).colorScheme.primary),
+                                                        const SizedBox(width: 4),
+                                                        Text(
+                                                          '${nextEpisode.runtime} min',
+                                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                            color: Theme.of(context).colorScheme.primary,
+                                                            fontWeight: FontWeight.w600,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                  if (nextEpisode.overview != null && nextEpisode.overview!.isNotEmpty) ...[
+                                                    const SizedBox(height: 8),
+                                                    Text(
+                                                      nextEpisode.overview!,
+                                                      maxLines: 3,
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: Theme.of(
+                                                        context,
+                                                      ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                                    ),
+                                                  ],
                                                 ],
                                               ),
                                             ),
@@ -297,7 +324,7 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                                                 msg: "Marked S${nextEpisode.seasonNumber}E${nextEpisode.episodeNumber} as watched",
                                               );
                                             },
-                                            icon: const Icon(Icons.check_rounded, size: 18),
+                                            icon: const Icon(Icons.check_outlined, size: 18),
                                             label: const Text('Mark as Watched'),
                                           ),
                                         ),

@@ -1,19 +1,19 @@
 import '../entity/app_parameter.dart';
 import '../entity/tv_show.dart';
-import '../main.dart';
+import 'app_state.dart';
 
-List<AppParameter> selectAppParameters() => store.state.appParameters;
+List<AppParameter> selectAppParameters(AppState state) => state.appParameters;
 
-String? selectParameterValueByKey(String key) {
+String? selectParameterValueByKey(AppState state, String key) {
   try {
-    return store.state.appParameters.firstWhere((element) => element.getKey() == key).getValue();
+    return state.appParameters.firstWhere((element) => element.getKey() == key).getValue();
   } catch (e) {
     return null;
   }
 }
 
-bool selectParameterValueByKeyAsBoolean(String key, {bool defaultValue = true}) {
-  String? value = selectParameterValueByKey(key);
+bool selectParameterValueByKeyAsBoolean(AppState state, String key, {bool defaultValue = true}) {
+  String? value = selectParameterValueByKey(state, key);
 
   if (value == null) {
     return defaultValue;
@@ -22,6 +22,6 @@ bool selectParameterValueByKeyAsBoolean(String key, {bool defaultValue = true}) 
   return value == "true";
 }
 
-List<TvShow> selectActiveTvShows() => store.state.tvShows.where((s) => !s.isArchived).toList();
+List<TvShow> selectActiveTvShows(AppState state) => state.tvShows.where((s) => !s.isArchived).toList();
 
-List<TvShow> selectArchivedTvShows() => store.state.tvShows.where((s) => s.isArchived).toList();
+List<TvShow> selectArchivedTvShows(AppState state) => state.tvShows.where((s) => s.isArchived).toList();

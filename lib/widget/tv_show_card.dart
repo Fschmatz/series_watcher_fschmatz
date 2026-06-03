@@ -11,8 +11,21 @@ class TvShowCard extends StatefulWidget {
   final TvShow tvShow;
   final VoidCallback? onTap;
   final bool isFromArchive;
+  final bool showNextEpisodeInfo;
+  final bool showNextEpisodeDuration;
+  final bool showRemainingEpisodes;
+  final bool showSeriesStatus;
 
-  const TvShowCard({super.key, required this.tvShow, this.onTap, this.isFromArchive = false});
+  const TvShowCard({
+    super.key,
+    required this.tvShow,
+    this.onTap,
+    this.isFromArchive = false,
+    this.showNextEpisodeInfo = false,
+    this.showNextEpisodeDuration = false,
+    this.showRemainingEpisodes = false,
+    this.showSeriesStatus = false,
+  });
 
   @override
   State<TvShowCard> createState() => _TvShowCardState();
@@ -27,6 +40,43 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
     super.build(context);
     final tvShow = widget.tvShow;
     final onTap = widget.onTap;
+    final showNextEpisodeInfo = widget.showNextEpisodeInfo;
+    final showNextEpisodeDuration = widget.showNextEpisodeDuration;
+    final showRemainingEpisodes = widget.showRemainingEpisodes;
+    final showSeriesStatus = widget.showSeriesStatus;
+
+    int activeOptionsCount = 0;
+    if (!widget.isFromArchive) {
+      if (showNextEpisodeInfo) activeOptionsCount++;
+      if (showNextEpisodeDuration) activeOptionsCount++;
+      if (showRemainingEpisodes) activeOptionsCount++;
+      if (showSeriesStatus) activeOptionsCount++;
+    }
+
+    double posterWidth = 95;
+    double posterHeight = 135;
+
+    if (widget.isFromArchive) {
+      posterWidth = 68;
+      posterHeight = 102;
+    } else {
+      if (activeOptionsCount == 0) {
+        posterWidth = 68;
+        posterHeight = 102;
+      } else if (activeOptionsCount == 1) {
+        posterWidth = 77;
+        posterHeight = 113;
+      } else if (activeOptionsCount == 2) {
+        posterWidth = 86;
+        posterHeight = 124;
+      } else if (activeOptionsCount == 3) {
+        posterWidth = 95;
+        posterHeight = 135;
+      } else {
+        posterWidth = 105;
+        posterHeight = 155;
+      }
+    }
 
     return Card(
       margin: AppConstants.marginSeriesCards,
@@ -36,8 +86,8 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
         onLongPress: () => _showBottomSheet(context, tvShow),
         child: Row(
           children: [
-            TvShowPoster(tvShow: tvShow, width: widget.isFromArchive ? 68 : 95, height: widget.isFromArchive ? 102 : 135),
-            const SizedBox(width: 10),
+            TvShowPoster(tvShow: tvShow, width: posterWidth, height: posterHeight),
+            const SizedBox(width: 12),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 12, 12, 12),
@@ -53,7 +103,7 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (widget.isFromArchive && tvShow.status != null) ...[
+                    if ((widget.isFromArchive || showSeriesStatus) && tvShow.status != null) ...[
                       const SizedBox(height: 6),
                       Text(
                         tvShow.status!,
@@ -62,7 +112,7 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
                         ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.w600),
                       ),
                     ],
-                    if (!widget.isFromArchive && tvShow.nextEpisodeInfo != null) ...[
+                    if (showNextEpisodeInfo && !widget.isFromArchive && tvShow.nextEpisodeInfo != null) ...[
                       const SizedBox(height: 8),
                       Row(
                         children: [
@@ -81,7 +131,7 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
                         ],
                       ),
                     ],
-                    if (!widget.isFromArchive && tvShow.nextEpisodeRuntime != null && tvShow.nextEpisodeRuntime! > 0) ...[
+                    if (showNextEpisodeDuration && !widget.isFromArchive && tvShow.nextEpisodeRuntime != null && tvShow.nextEpisodeRuntime! > 0) ...[
                       const SizedBox(height: 8),
                       Row(
                         children: [
@@ -96,7 +146,7 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
                         ],
                       ),
                     ],
-                    if (tvShow.remainingEpisodes != null && tvShow.remainingEpisodes! > 0) ...[
+                    if (showRemainingEpisodes && tvShow.remainingEpisodes != null && tvShow.remainingEpisodes! > 0) ...[
                       const SizedBox(height: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -131,13 +181,13 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
   void _showBottomSheet(BuildContext context, TvShow tvShow) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      showDragHandle: true,
       builder: (context) {
         final hasNextEpisode = tvShow.nextEpisodeInfo != null;
 
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            padding: const EdgeInsets.only(bottom: 16.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,41 +205,53 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
                     ),
                   ),
                 ],
-                const SizedBox(height: 12),
-                const Divider(),
-                ListTile(
-                  leading: const Icon(Icons.check_circle_outline_rounded),
-                  title: const Text('Mark next as watched'),
-                  enabled: hasNextEpisode,
-                  onTap: () {
-                    Navigator.pop(context);
-                    if (tvShow.id != null) {
-                      StoreProvider.dispatch(context, MarkNextEpisodeAsWatchedAction(tvShow.id!));
-                      Fluttertoast.showToast(msg: "Marked next episode as watched");
-                    }
-                  },
-                ),
-                ListTile(
-                  leading: Icon(tvShow.isArchived ? Icons.unarchive_outlined : Icons.archive_outlined),
-                  title: Text(tvShow.isArchived ? 'Unarchive series' : 'Archive series'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    if (tvShow.id != null) {
-                      StoreProvider.dispatch(context, ToggleArchiveTvShowAction(tvShow.id!, !tvShow.isArchived));
-                      Fluttertoast.showToast(msg: tvShow.isArchived ? "Series unarchived" : "Series archived");
-                    }
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.sync_rounded),
-                  title: const Text('Sync series'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    if (tvShow.id != null) {
-                      Fluttertoast.showToast(msg: "Syncing ${tvShow.name}...");
-                      StoreProvider.dispatch(context, SyncSingleTvShowAction(tvShow.id!));
-                    }
-                  },
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Card(
+                    clipBehavior: Clip.antiAlias,
+                    margin: EdgeInsets.zero,
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.check_outlined),
+                          title: const Text('Mark next as watched'),
+                          enabled: hasNextEpisode,
+                          onTap: () {
+                            Navigator.pop(context);
+                            if (tvShow.id != null) {
+                              context.dispatch(MarkNextEpisodeAsWatchedAction(tvShow.id!));
+                              Fluttertoast.showToast(msg: "Marked next episode as watched");
+                            }
+                          },
+                        ),
+                        const Divider(),
+                        ListTile(
+                          leading: Icon(tvShow.isArchived ? Icons.unarchive_outlined : Icons.archive_outlined),
+                          title: Text(tvShow.isArchived ? 'Unarchive series' : 'Archive series'),
+                          onTap: () {
+                            Navigator.pop(context);
+                            if (tvShow.id != null) {
+                              context.dispatch(ToggleArchiveTvShowAction(tvShow.id!, !tvShow.isArchived));
+                              Fluttertoast.showToast(msg: tvShow.isArchived ? "Series unarchived" : "Series archived");
+                            }
+                          },
+                        ),
+                        const Divider(),
+                        ListTile(
+                          leading: const Icon(Icons.sync_rounded),
+                          title: const Text('Sync series'),
+                          onTap: () {
+                            Navigator.pop(context);
+                            if (tvShow.id != null) {
+                              Fluttertoast.showToast(msg: "Syncing ${tvShow.name}...");
+                              context.dispatch(SyncSingleTvShowAction(tvShow.id!));
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),

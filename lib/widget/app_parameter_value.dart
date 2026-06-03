@@ -14,11 +14,7 @@ class AppParameterValue extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, String?>(
-      converter: (store) => selectParameterValueByKey(parameterKey),
-      builder: (context, value) {
-        return Text(value ?? '');
-      },
-    );
+    final value = context.select((state) => selectParameterValueByKey(state, parameterKey));
+    return Text(value ?? '');
   }
 }

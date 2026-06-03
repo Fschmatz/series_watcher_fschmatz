@@ -10,6 +10,7 @@ import '../redux/actions.dart';
 import '../redux/app_state.dart';
 import '../util/app_constants.dart';
 import '../widget/app_parameter_value.dart';
+import '../widget/settings_switch.dart';
 import 'changelog.dart';
 
 class Settings extends StatefulWidget {
@@ -67,16 +68,71 @@ class SettingsState extends State<Settings> {
                 ),
                 Card(
                   clipBehavior: Clip.antiAlias,
-                  child: ListTile(
-                    onTap: () => showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return const DialogSelectTheme();
-                      },
-                    ),
-                    leading: const Icon(Icons.brightness_6_outlined),
-                    title: const Text("App theme"),
-                    subtitle: Text(UtilsFunctions.getThemeStringFormatted(EasyDynamicTheme.of(context).themeMode)),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        onTap: () => showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return const DialogSelectTheme();
+                          },
+                        ),
+                        leading: const Icon(Icons.brightness_6_outlined),
+                        title: const Text("App theme"),
+                        subtitle: Text(UtilsFunctions.getThemeStringFormatted(EasyDynamicTheme.of(context).themeMode)),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
+                  child: Text(
+                    "Home",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+                  ),
+                ),
+                Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    children: [
+                      const SettingsSwitch(
+                        title: "Show next episode info",
+                        subtitle: "Show next episode name on card",
+                        parameterKey: AppConstants.showNextEpisodeNameAppParameter,
+                        defaultValue: true,
+                      ),
+                      const Divider(height: 1),
+                      const SettingsSwitch(
+                        title: "Show next episode duration",
+                        subtitle: "Show next episode duration on card",
+                        parameterKey: AppConstants.showNextEpisodeDurationAppParameter,
+                        defaultValue: true,
+                      ),
+                      const Divider(height: 1),
+                      const SettingsSwitch(
+                        title: "Show remaining episodes",
+                        subtitle: "Show remaining episodes count on card",
+                        parameterKey: AppConstants.showRemainingEpisodesAppParameter,
+                        defaultValue: true,
+                      ),
+                      const Divider(height: 1),
+                      const SettingsSwitch(
+                        title: "Show series status",
+                        subtitle: "Show series status (e.g. Returning Series) on card",
+                        parameterKey: AppConstants.showSeriesStatusAppParameter,
+                        defaultValue: false,
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -158,14 +214,14 @@ class SettingsState extends State<Settings> {
                           );
 
                           if (result == true && context.mounted) {
-                            StoreProvider.dispatch<AppState>(context, LoadAppParametersAction());
+                            context.dispatch(LoadAppParametersAction());
                           }
                         },
                         leading: const Icon(Icons.save_outlined),
                         title: const Text("Backup now"),
                         subtitle: Row(
                           children: [
-                            const Text("Last backup: ", style: TextStyle(fontSize: 12)),
+                            const Text("Last backup: "),
                             AppParameterValue(parameterKey: AppConstants.lastBackupDateAppParameter),
                           ],
                         ),
@@ -181,9 +237,9 @@ class SettingsState extends State<Settings> {
                           );
 
                           if (result == true && context.mounted) {
-                            StoreProvider.dispatch<AppState>(context, LoadAppParametersAction());
-                            StoreProvider.dispatch<AppState>(context, LoadTvShowsAction());
-                            StoreProvider.dispatch<AppState>(context, LoadWatchedEpisodesAction());
+                            context.dispatch(LoadAppParametersAction());
+                            context.dispatch(LoadTvShowsAction());
+                            context.dispatch(LoadWatchedEpisodesAction());
                           }
                         },
                         leading: const Icon(Icons.settings_backup_restore_outlined),
