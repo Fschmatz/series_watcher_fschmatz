@@ -52,16 +52,15 @@ class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, (List<TvShow>, Future<void> Function(TvShow))>(
-      converter: (store) => (store.state.tvShows, (show) => store.dispatchAndWait(SaveTvShowAction(show))),
-      builder: (context, viewData) {
-        final (savedShows, onSaveShow) = viewData;
-        final isSaved = savedShows.any((s) => s.id == widget.tvShowId);
+    final savedShows = context.select((AppState state) => state.tvShows);
+    Future<void> onSaveShow(TvShow show) => StoreProvider.dispatchAndWait(context, SaveTvShowAction(show));
 
-        final seasons = _tvShow?.seasons?.where((s) => s.seasonNumber != 0).toList() ?? [];
-        final specials = _tvShow?.seasons?.where((s) => s.seasonNumber == 0).toList() ?? [];
+    final isSaved = savedShows.any((s) => s.id == widget.tvShowId);
 
-        return Scaffold(
+    final seasons = _tvShow?.seasons?.where((s) => s.seasonNumber != 0).toList() ?? [];
+    final specials = _tvShow?.seasons?.where((s) => s.seasonNumber == 0).toList() ?? [];
+
+    return Scaffold(
           appBar: AppBar(title: const Text('Preview')),
           floatingActionButton: (!isSaved && _tvShow != null && !_isSaving)
               ? FloatingActionButton.extended(
@@ -256,7 +255,5 @@ class _TvShowDetailsSearchState extends State<TvShowDetailsSearch> {
                   ],
                 ),
         );
-      },
-    );
   }
 }

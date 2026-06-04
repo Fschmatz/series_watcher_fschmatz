@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/widget_on_background"
-        android:textSize="12sp"
+        android:textSize="13sp"
         android:textStyle="bold"
         android:maxLines="1"
         android:ellipsize="end" />
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="@color/widget_secondary_text"
-            android:textSize="11sp"
+            android:textSize="12sp"
             android:maxLines="1"
             android:ellipsize="end" />
 
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:textColor="@color/widget_secondary_text"
-            android:textSize="11sp"
+            android:textSize="12sp"
             android:maxLines="1" />
 
     </LinearLayout>

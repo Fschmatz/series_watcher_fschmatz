@@ -13,7 +13,7 @@ class AppConstants {
   static const String showSeriesStatusAppParameter = "showSeriesStatus";
 
   // STRINGS
-  static const String appVersion = "1.3.1";
+  static const String appVersion = "1.3.2";
   static const String backupFileName = "series_watcher_backup";
   static const String appName = "Series Watcher Fschmatz";
   static const String appNameHomePage = "Series Watcher";
