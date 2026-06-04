@@ -111,21 +111,21 @@ class SettingsState extends State<Settings> {
                         parameterKey: AppConstants.showNextEpisodeNameAppParameter,
                         defaultValue: true,
                       ),
-                      const Divider(height: 1),
+                      const Divider(),
                       const SettingsSwitch(
                         title: "Show next episode duration",
                         subtitle: "Show next episode duration on card",
                         parameterKey: AppConstants.showNextEpisodeDurationAppParameter,
                         defaultValue: true,
                       ),
-                      const Divider(height: 1),
+                      const Divider(),
                       const SettingsSwitch(
                         title: "Show remaining episodes",
                         subtitle: "Show remaining episodes count on card",
                         parameterKey: AppConstants.showRemainingEpisodesAppParameter,
                         defaultValue: true,
                       ),
-                      const Divider(height: 1),
+                      const Divider(),
                       const SettingsSwitch(
                         title: "Show series status",
                         subtitle: "Show series status (e.g. Returning Series) on card",
@@ -174,7 +174,7 @@ class SettingsState extends State<Settings> {
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              const Text("Last sync: ", style: TextStyle(fontSize: 12)),
+                              const Text("Last sync: "),
                               AppParameterValue(parameterKey: AppConstants.lastSyncDateAppParameter),
                             ],
                           ),

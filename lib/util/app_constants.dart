@@ -13,7 +13,7 @@ class AppConstants {
   static const String showSeriesStatusAppParameter = "showSeriesStatus";
 
   // STRINGS
-  static const String appVersion = "1.3.0";
+  static const String appVersion = "1.3.1";
   static const String backupFileName = "series_watcher_backup";
   static const String appName = "Series Watcher Fschmatz";
   static const String appNameHomePage = "Series Watcher";
@@ -21,9 +21,7 @@ class AppConstants {
   static const String changelogCurrent =
       '''
 $appVersion
-- Bottom sheet onHold
-- History page updates
-- Add episode duration on home cards
+- Add widget
 - Home settings
 - UI changes
 - Fix bugs
@@ -31,6 +29,13 @@ $appVersion
 ''';
 
   static const String changelogsOld = '''
+v1.2.3
+- Bottom sheet onHold
+- History page updates
+- Add episode duration on home cards
+- UI changes
+- Fix bugs
+
 1.1.0
 - More UI changes
 - Add button to mark episode as watched

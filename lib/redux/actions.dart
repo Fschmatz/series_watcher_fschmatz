@@ -5,6 +5,7 @@ import '../entity/episode_watched.dart';
 import '../entity/tv_show.dart';
 import '../service/app_parameter_service.dart';
 import '../service/tv_show_local_service.dart';
+import '../service/widget_service.dart';
 import 'app_state.dart';
 import 'helper/app_action.dart';
 
@@ -45,6 +46,7 @@ class LoadTvShowsAction extends AppAction {
   @override
   Future<AppState?> reduce() async {
     List<TvShow> tvShows = await TvShowLocalService().getAllTvShows();
+    WidgetService.updateNextEpisodeWidget(tvShows);
     return state.copyWith(tvShows: tvShows, isLoadingShows: false);
   }
 }
@@ -149,6 +151,25 @@ class ToggleArchiveTvShowAction extends AppAction {
   @override
   Future<AppState?> reduce() async {
     await TvShowLocalService().archiveTvShow(id, archive);
+
+    return null;
+  }
+
+  @override
+  void after() {
+    dispatch(LoadTvShowsAction(showLoading: false));
+  }
+}
+
+class ToggleShowInWidgetAction extends AppAction {
+  final int id;
+  final bool showInWidget;
+
+  ToggleShowInWidgetAction(this.id, this.showInWidget);
+
+  @override
+  Future<AppState?> reduce() async {
+    await TvShowLocalService().toggleShowInWidget(id, showInWidget);
 
     return null;
   }

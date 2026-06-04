@@ -53,4 +53,14 @@ class TvShowDAO {
       whereArgs: [id],
     );
   }
+
+  Future<int> toggleShowInWidget(int id, bool showInWidget) async {
+    Database db = await DatabaseHelper.instance.database;
+    return await db.update(
+      DatabaseHelper.tableTvShows,
+      {DatabaseHelper.columnShowInWidget: showInWidget ? 1 : 0},
+      where: '${DatabaseHelper.columnIdTvShow} = ?',
+      whereArgs: [id],
+    );
+  }
 }

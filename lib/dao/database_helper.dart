@@ -1,12 +1,12 @@
 import 'dart:io';
+
 import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
-
   static const _databaseName = "SeriesWatcher.db";
-  static const _databaseVersion = 1;
+  static const _databaseVersion = 2;
 
   // TV Shows
   static const tableTvShows = 'tv_shows';
@@ -24,6 +24,7 @@ class DatabaseHelper {
   static const columnStatus = 'status';
   static const columnPopularity = 'popularity';
   static const columnArchived = 'archived';
+  static const columnShowInWidget = 'show_in_widget';
 
   // Seasons
   static const tableSeasons = 'seasons';
@@ -66,17 +67,15 @@ class DatabaseHelper {
   static Database? _database;
 
   DatabaseHelper._privateConstructor();
+
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
-  Future<Database> get database async =>
-      _database ??= await initDatabase();
+  Future<Database> get database async => _database ??= await initDatabase();
 
   Future<Database> initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
-    return await openDatabase(path,
-        version: _databaseVersion,
-        onCreate: _onCreate);
+    return await openDatabase(path, version: _databaseVersion, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
   Future _onCreate(Database db, int version) async {
@@ -95,7 +94,8 @@ class DatabaseHelper {
              $columnNumberOfEpisodes INTEGER,
              $columnStatus TEXT,
              $columnPopularity REAL,
-             $columnArchived INTEGER NOT NULL DEFAULT 0
+             $columnArchived INTEGER NOT NULL DEFAULT 0,
+             $columnShowInWidget INTEGER NOT NULL DEFAULT 0
           )          
           ''');
 
@@ -146,5 +146,11 @@ class DatabaseHelper {
             $columnParamValue TEXT
           )
           ''');
+  }
+
+  Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE $tableTvShows ADD COLUMN $columnShowInWidget INTEGER NOT NULL DEFAULT 0');
+    }
   }
 }

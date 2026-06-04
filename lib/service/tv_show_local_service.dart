@@ -88,10 +88,11 @@ class TvShowLocalService extends StoreService {
       tvShow.posterImage = await _downloadImageAsBase64(tvShow.posterPath!);
     }
 
-    // Preserve local archived status
+    // Preserve local archived and widget status
     final localShow = await _tvShowDao.getTvShowById(id);
     if (localShow != null) {
       tvShow.isArchived = localShow.isArchived;
+      tvShow.showInWidget = localShow.showInWidget;
     }
 
     // 2. For each season, get episodes
@@ -157,6 +158,14 @@ class TvShowLocalService extends StoreService {
 
   Future<void> archiveTvShow(int id, bool archive) async {
     await _tvShowDao.archiveTvShow(id, archive);
+    // When archiving, remove from widget so it doesn't reappear on unarchive
+    if (archive) {
+      await _tvShowDao.toggleShowInWidget(id, false);
+    }
+  }
+
+  Future<void> toggleShowInWidget(int id, bool showInWidget) async {
+    await _tvShowDao.toggleShowInWidget(id, showInWidget);
   }
 
   Future<List<HistoryItem>> getHistoryLastTwoMonths() async {

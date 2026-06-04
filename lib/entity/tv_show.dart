@@ -18,6 +18,7 @@ class TvShow {
   String? status;
   double? popularity;
   bool isArchived;
+  bool showInWidget;
   List<Genre>? genres;
   List<Season>? seasons;
   String? nextEpisodeInfo;
@@ -41,6 +42,7 @@ class TvShow {
     this.status,
     this.popularity,
     this.isArchived = false,
+    this.showInWidget = false,
     this.genres,
     this.seasons,
     this.nextEpisodeInfo,
@@ -83,6 +85,7 @@ class TvShow {
       'status': status,
       'popularity': popularity,
       'archived': isArchived ? 1 : 0,
+      'show_in_widget': showInWidget ? 1 : 0,
     };
   }
 
@@ -102,6 +105,7 @@ class TvShow {
       status: map['status'],
       popularity: (map['popularity'])?.toDouble(),
       isArchived: (map['archived'] ?? 0) == 1,
+      showInWidget: (map['show_in_widget'] ?? 0) == 1,
       genres: map['genres'] != null ? (map['genres'] as List).map((g) => Genre.fromMap(g)).toList() : null,
       seasons: map['seasons'] != null ? (map['seasons'] as List).map((s) => Season.fromMap(s)).toList() : null,
     );

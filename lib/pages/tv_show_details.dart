@@ -69,7 +69,15 @@ class _TvShowDetailsState extends State<TvShowDetails> {
   Widget build(BuildContext context) {
     return StoreConnector<
       AppState,
-      (List<TvShow>, List<int>, void Function(TvShow), void Function(int), void Function(int, bool), void Function(Episode, bool))
+      (
+        List<TvShow>,
+        List<int>,
+        void Function(TvShow),
+        void Function(int),
+        void Function(int, bool),
+        void Function(Episode, bool),
+        void Function(int, bool),
+      )
     >(
       converter: (store) => (
         store.state.tvShows,
@@ -78,9 +86,10 @@ class _TvShowDetailsState extends State<TvShowDetails> {
         (id) => store.dispatch(RemoveTvShowAction(id)),
         (id, archive) => store.dispatch(ToggleArchiveTvShowAction(id, archive)),
         (episode, watched) => store.dispatch(ToggleEpisodeWatchedAction(widget.tvShowId, episode, watched)),
+        (id, showInWidget) => store.dispatch(ToggleShowInWidgetAction(id, showInWidget)),
       ),
       builder: (context, viewData) {
-        final (savedShows, watchedIds, onSaveShow, onRemoveShow, onToggleArchive, onToggleEpisodeWatched) = viewData;
+        final (savedShows, watchedIds, onSaveShow, onRemoveShow, onToggleArchive, onToggleEpisodeWatched, onToggleWidget) = viewData;
 
         final tvShowLocal = savedShows.where((s) => s.id == widget.tvShowId).firstOrNull;
         final isSaved = tvShowLocal != null;
@@ -94,6 +103,16 @@ class _TvShowDetailsState extends State<TvShowDetails> {
             title: const Text('Details'),
             actions: [
               if (isSaved) ...[
+                if (!isArchived)
+                  IconButton(
+                    icon: Icon(tvShowLocal.showInWidget == true ? Icons.dashboard_customize : Icons.dashboard_customize_outlined),
+                    tooltip: tvShowLocal.showInWidget == true ? 'Remove from Widget' : 'Add to Widget',
+                    onPressed: () {
+                      final newValue = !(tvShowLocal.showInWidget);
+                      onToggleWidget(widget.tvShowId, newValue);
+                      Fluttertoast.showToast(msg: newValue ? "Added to Widget" : "Removed from Widget");
+                    },
+                  ),
                 IconButton(
                   icon: Icon(isArchived ? Icons.unarchive_outlined : Icons.archive_outlined),
                   onPressed: () {
