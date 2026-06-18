@@ -3,6 +3,7 @@ import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:series_watcher_fschmatz/pages/home.dart';
+import 'package:series_watcher_fschmatz/util/toast_utils.dart';
 
 class AppTheme extends StatefulWidget {
   const AppTheme({super.key});
@@ -30,8 +31,7 @@ class _AppThemeState extends State<AppTheme> {
           return ThemeData(
             colorScheme: colorScheme,
             useMaterial3: true,
-            scaffoldBackgroundColor: colorScheme.surfaceContainerLow,
-            appBarTheme: AppBarThemeData(backgroundColor: colorScheme.surfaceContainerLow, elevation: 0),
+            appBarTheme: AppBarThemeData(elevation: 0),
             dividerTheme: DividerThemeData(color: colorScheme.surfaceContainerLow, space: 1),
             cardTheme: CardThemeData(
               color: colorScheme.surfaceContainerHigh,
@@ -60,6 +60,7 @@ class _AppThemeState extends State<AppTheme> {
 
         return MaterialApp(
           debugShowCheckedModeBanner: false,
+          scaffoldMessengerKey: ToastUtils.scaffoldMessengerKey,
           theme: buildTheme(lightScheme),
           darkTheme: buildTheme(darkScheme),
           themeMode: EasyDynamicTheme.of(context).themeMode,

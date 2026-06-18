@@ -1,10 +1,10 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import '../entity/tv_show.dart';
 import '../redux/actions.dart';
 import '../util/app_constants.dart';
+import '../util/toast_utils.dart';
 import 'tv_show_poster.dart';
 
 class TvShowCard extends StatefulWidget {
@@ -218,10 +218,10 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
                           title: const Text('Mark next as watched'),
                           enabled: hasNextEpisode,
                           onTap: () {
-                            Navigator.pop(context);
                             if (tvShow.id != null) {
+                              ToastUtils.show('Marked next episode as watched');
+                              Navigator.pop(context);
                               context.dispatch(MarkNextEpisodeAsWatchedAction(tvShow.id!));
-                              Fluttertoast.showToast(msg: "Marked next episode as watched");
                             }
                           },
                         ),
@@ -230,10 +230,11 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
                           leading: Icon(tvShow.isArchived ? Icons.unarchive_outlined : Icons.archive_outlined),
                           title: Text(tvShow.isArchived ? 'Unarchive series' : 'Archive series'),
                           onTap: () {
-                            Navigator.pop(context);
                             if (tvShow.id != null) {
+                              final msg = tvShow.isArchived ? 'Series unarchived' : 'Series archived';
+                              ToastUtils.show(msg);
+                              Navigator.pop(context);
                               context.dispatch(ToggleArchiveTvShowAction(tvShow.id!, !tvShow.isArchived));
-                              Fluttertoast.showToast(msg: tvShow.isArchived ? "Series unarchived" : "Series archived");
                             }
                           },
                         ),
@@ -241,11 +242,16 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
                         ListTile(
                           leading: const Icon(Icons.sync_rounded),
                           title: const Text('Sync series'),
-                          onTap: () {
+                          onTap: () async {
                             Navigator.pop(context);
                             if (tvShow.id != null) {
-                              Fluttertoast.showToast(msg: "Syncing ${tvShow.name}...");
-                              context.dispatch(SyncSingleTvShowAction(tvShow.id!));
+                              ToastUtils.show('Syncing ${tvShow.name}...');
+
+                              var status = await context.dispatchAndWait(SyncSingleTvShowAction(tvShow.id!));
+
+                              if (status.isCompletedOk) {
+                                ToastUtils.show('Sync completed');
+                              }
                             }
                           },
                         ),

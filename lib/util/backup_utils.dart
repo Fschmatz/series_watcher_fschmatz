@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sqflite/sqflite.dart';
+
 import '../dao/database_helper.dart';
 import '../entity/backup.dart';
 import '../service/app_parameter_service.dart';
+import 'toast_utils.dart';
 
 class BackupUtils {
-
   Future<void> _loadStoragePermission() async {
     var status = await Permission.manageExternalStorage.status;
 
@@ -42,14 +42,10 @@ class BackupUtils {
       await _saveListAsJson(backup, fileName);
       await AppParameterService().saveLastBackupDate();
 
-      Fluttertoast.showToast(
-        msg: "Backup completed!",
-      );
+      ToastUtils.show('Backup completed!');
       return true;
     } else {
-      Fluttertoast.showToast(
-        msg: "No data found!",
-      );
+      ToastUtils.show('No data found!');
       return false;
     }
   }
@@ -62,9 +58,7 @@ class BackupUtils {
 
       await file.writeAsString(json.encode(data));
     } catch (e) {
-      Fluttertoast.showToast(
-        msg: "Error!",
-      );
+      ToastUtils.show('Error!');
     }
   }
 
@@ -81,14 +75,10 @@ class BackupUtils {
       await _deleteAllData();
       await _insertBackupData(backup);
 
-      Fluttertoast.showToast(
-        msg: "Success!",
-      );
+      ToastUtils.show('Success!');
       return true;
     } catch (e) {
-      Fluttertoast.showToast(
-        msg: "Error!",
-      );
+      ToastUtils.show('Error!');
       return false;
     }
   }

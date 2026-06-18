@@ -1,7 +1,6 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../util/dialog_backup.dart';
 import '../../util/dialog_select_theme.dart';
@@ -9,6 +8,7 @@ import '../../util/utils_functions.dart';
 import '../redux/actions.dart';
 import '../redux/app_state.dart';
 import '../util/app_constants.dart';
+import '../util/toast_utils.dart';
 import '../widget/app_parameter_value.dart';
 import '../widget/settings_switch.dart';
 import 'changelog.dart';
@@ -161,7 +161,7 @@ class SettingsState extends State<Settings> {
                           ? null
                           : () {
                               viewData.onSync();
-                              Fluttertoast.showToast(msg: "Synchronizing series...");
+                              ToastUtils.show("Synchronizing series...");
                             },
                       leading: viewData.isSyncing
                           ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
@@ -170,7 +170,7 @@ class SettingsState extends State<Settings> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text("Update seasons and episodes for offline use"),
+                          const Text("Update seasons and episodes"),
                           const SizedBox(height: 4),
                           Row(
                             children: [

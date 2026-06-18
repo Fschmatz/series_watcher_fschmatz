@@ -13,23 +13,28 @@ class AppConstants {
   static const String showSeriesStatusAppParameter = "showSeriesStatus";
 
   // STRINGS
-  static const String appVersion = "1.3.2";
+  static const String appVersion = "1.4.1";
   static const String backupFileName = "series_watcher_backup";
   static const String appName = "Series Watcher Fschmatz";
   static const String appNameHomePage = "Series Watcher";
   static const String repositoryLink = "https://github.com/Fschmatz/series_watcher_fschmatz";
   static const String changelogCurrent =
-      '''
+  '''
 $appVersion
+- Add image to widget
+- UI changes
+- Flutter 3.44
+''';
+
+  static const String changelogsOld = '''
+1.3.2
 - Add widget
 - Home settings
 - UI changes
 - Fix bugs
 - New Redux logic
-''';
 
-  static const String changelogsOld = '''
-v1.2.3
+1.2.3
 - Bottom sheet onHold
 - History page updates
 - Add episode duration on home cards

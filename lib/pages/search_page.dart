@@ -88,40 +88,55 @@ class _SearchPageState extends State<SearchPage> {
       converter: (store) => (store.state.tvShows, (show) => store.dispatch(SaveTvShowAction(show))),
       builder: (context, viewData) {
         return Scaffold(
-          appBar: AppBar(
-            title: TextField(
-              controller: _searchController,
-              autofocus: true,
-              decoration: InputDecoration(
-                hintText: 'Search series...',
-                border: InputBorder.none,
-                suffixIcon: _isSearching
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() {
-                            _results = [];
-                            _isSearching = false;
-                          });
-                        },
-                      )
-                    : null,
-              ),
-              onSubmitted: _search,
-            ),
-            actions: [IconButton(icon: const Icon(Icons.search), onPressed: () => _search(_searchController.text))],
-          ),
-          body: PageTransitionSwitcher(
-            duration: const Duration(milliseconds: 300),
-            transitionBuilder: (child, animation, secondaryAnimation) {
-              return FadeThroughTransition(
-                fillColor: Colors.transparent,
-                animation: animation,
-                secondaryAnimation: secondaryAnimation,
-                child: child,
-              );
-            },
+          body: SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: SearchBar(
+                    controller: _searchController,
+                    autoFocus: true,
+                    leading: IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    hintText: 'Search series...',
+                    onSubmitted: _search,
+                    elevation: WidgetStateProperty.all(0),
+                    backgroundColor: WidgetStateProperty.all(
+                      Theme.of(context).colorScheme.surfaceContainerHigh,
+                    ),
+                    trailing: [
+                      if (_isSearching)
+                        IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            _searchController.clear();
+                            setState(() {
+                              _results = [];
+                              _isSearching = false;
+                            });
+                          },
+                        )
+                      else
+                        IconButton(
+                          icon: const Icon(Icons.search),
+                          onPressed: () => _search(_searchController.text),
+                        ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: PageTransitionSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder: (child, animation, secondaryAnimation) {
+                      return FadeThroughTransition(
+                        fillColor: Colors.transparent,
+                        animation: animation,
+                        secondaryAnimation: secondaryAnimation,
+                        child: child,
+                      );
+                    },
             child: _isSearching
                 ? _isLoading
                       ? const Center(key: ValueKey('loading_search'), child: CircularProgressIndicator())
@@ -171,6 +186,10 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                     ],
                   ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

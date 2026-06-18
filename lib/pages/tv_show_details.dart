@@ -1,6 +1,5 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import '../entity/episode.dart';
 import '../entity/tv_show.dart';
@@ -8,6 +7,7 @@ import '../redux/actions.dart';
 import '../redux/app_state.dart';
 import '../service/tv_service.dart';
 import '../service/tv_show_local_service.dart';
+import '../util/toast_utils.dart';
 import '../util/utils_functions.dart';
 import '../widget/metadata_badge.dart';
 import '../widget/season_list_tile.dart';
@@ -61,7 +61,7 @@ class _TvShowDetailsState extends State<TvShowDetails> {
           _isLoading = false;
         });
       }
-      Fluttertoast.showToast(msg: "Error loading details: $e");
+      ToastUtils.show('Error loading details: $e');
     }
   }
 
@@ -137,11 +137,11 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                   case 0:
                     final newValue = !(tvShowLocal.showInWidget);
                     onToggleWidget(widget.tvShowId, newValue);
-                    Fluttertoast.showToast(msg: newValue ? "Added to widget" : "Removed from widget");
+                    ToastUtils.show(newValue ? 'Added to widget' : 'Removed from widget');
                     break;
                   case 1:
                     onToggleArchive(widget.tvShowId, !isArchived);
-                    Fluttertoast.showToast(msg: isArchived ? "Restored from archive" : "Added to archive");
+                    ToastUtils.show(isArchived ? 'Restored from archive' : 'Added to archive');
                     break;
                   case 2:
                     showDialog(
@@ -156,7 +156,7 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                               Navigator.pop(context);
                               onRemoveShow(widget.tvShowId);
                               Navigator.pop(this.context);
-                              Fluttertoast.showToast(msg: "Removed from watchlist");
+                              ToastUtils.show('Removed from watchlist');
                             },
                             child: const Text('Remove', style: TextStyle(color: Colors.red)),
                           ),
@@ -361,7 +361,7 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                                         ),
                                         onPressed: () {
                                           onToggleEpisodeWatched(nextEpisode!, true);
-                                          Fluttertoast.showToast(msg: "Marked S${nextEpisode.seasonNumber}E${nextEpisode.episodeNumber} as watched");
+                                          ToastUtils.show('Marked S${nextEpisode.seasonNumber}E${nextEpisode.episodeNumber} as watched');
                                         },
                                         icon: const Icon(Icons.check_outlined, size: 18),
                                         label: const Text('Mark as Watched'),

@@ -18,26 +18,16 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     final tvShows = context.select(selectActiveTvShows);
     final isLoading = context.select((state) => state.isLoadingShows);
-    final showNextEpisodeInfo = context.select((state) => selectParameterValueByKeyAsBoolean(
-          state,
-          AppConstants.showNextEpisodeNameAppParameter,
-          defaultValue: true,
-        ));
-    final showNextEpisodeDuration = context.select((state) => selectParameterValueByKeyAsBoolean(
-          state,
-          AppConstants.showNextEpisodeDurationAppParameter,
-          defaultValue: true,
-        ));
-    final showRemainingEpisodes = context.select((state) => selectParameterValueByKeyAsBoolean(
-          state,
-          AppConstants.showRemainingEpisodesAppParameter,
-          defaultValue: true,
-        ));
-    final showSeriesStatus = context.select((state) => selectParameterValueByKeyAsBoolean(
-          state,
-          AppConstants.showSeriesStatusAppParameter,
-          defaultValue: false,
-        ));
+    final showNextEpisodeInfo = context.select((state) => selectParameterValueByKeyAsBoolean(state, AppConstants.showNextEpisodeNameAppParameter));
+    final showNextEpisodeDuration = context.select(
+      (state) => selectParameterValueByKeyAsBoolean(state, AppConstants.showNextEpisodeDurationAppParameter),
+    );
+    final showRemainingEpisodes = context.select(
+      (state) => selectParameterValueByKeyAsBoolean(state, AppConstants.showRemainingEpisodesAppParameter),
+    );
+    final showSeriesStatus = context.select(
+      (state) => selectParameterValueByKeyAsBoolean(state, AppConstants.showSeriesStatusAppParameter, defaultValue: false),
+    );
 
     return Scaffold(
       appBar: AppBar(
