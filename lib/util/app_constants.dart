@@ -13,13 +13,13 @@ class AppConstants {
   static const String showSeriesStatusAppParameter = "showSeriesStatus";
 
   // STRINGS
-  static const String appVersion = "1.4.1";
+  static const String appVersion = "1.4.2";
   static const String backupFileName = "series_watcher_backup";
   static const String appName = "Series Watcher Fschmatz";
   static const String appNameHomePage = "Series Watcher";
   static const String repositoryLink = "https://github.com/Fschmatz/series_watcher_fschmatz";
   static const String changelogCurrent =
-  '''
+      '''
 $appVersion
 - Add image to widget
 - UI changes

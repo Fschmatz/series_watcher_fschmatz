@@ -8,8 +8,9 @@ import 'tv_show_poster.dart';
 class TvShowCardSearch extends StatelessWidget {
   final TvShow tvShow;
   final VoidCallback? onTap;
+  final bool isSaved;
 
-  const TvShowCardSearch({super.key, required this.tvShow, this.onTap});
+  const TvShowCardSearch({super.key, required this.tvShow, this.onTap, this.isSaved = false});
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +70,14 @@ class TvShowCardSearch extends StatelessWidget {
                 ),
               ),
             ),
+            if (isSaved)
+              Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: Icon(
+                  Icons.bookmark_added,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
           ],
         ),
       ),

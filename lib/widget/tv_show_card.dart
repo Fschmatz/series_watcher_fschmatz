@@ -148,24 +148,17 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
                     ],
                     if (showRemainingEpisodes && tvShow.remainingEpisodes != null && tvShow.remainingEpisodes! > 0) ...[
                       const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, borderRadius: BorderRadius.circular(20)),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.play_circle_outline_rounded, size: 12, color: Theme.of(context).colorScheme.onPrimaryContainer),
-                            const SizedBox(width: 6),
-                            Text(
-                              '${tvShow.remainingEpisodes} remaining',
-                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.2,
-                              ),
-                            ),
-                          ],
-                        ),
+                      Row(
+                        children: [
+                          Icon(Icons.play_circle_outline_rounded, size: 14, color: Theme.of(context).colorScheme.primary),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${tvShow.remainingEpisodes} remaining',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600),
+                          ),
+                        ],
                       ),
                     ],
                   ],

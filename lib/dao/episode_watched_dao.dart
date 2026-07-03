@@ -52,9 +52,10 @@ class EpisodeWatchedDAO {
     return maps.map((m) => m[DatabaseHelper.columnIdEpisode] as int).toList();
   }
 
-  Future<List<Map<String, dynamic>>> getHistoryLastTwoMonths() async {
+  Future<List<Map<String, dynamic>>> getHistoryCurrentMonth() async {
     Database db = await DatabaseHelper.instance.database;
-    final sixtyDaysAgo = DateTime.now().subtract(const Duration(days: 60)).toString();
+    final now = DateTime.now();
+    final firstDayOfMonth = DateTime(now.year, now.month, 1).toString();
 
     final sql =
         '''
@@ -72,12 +73,12 @@ class EpisodeWatchedDAO {
       LIMIT 200
     ''';
 
-    return await db.rawQuery(sql, [sixtyDaysAgo]);
+    return await db.rawQuery(sql, [firstDayOfMonth]);
   }
   Future<int> getWatchedMinutesCurrentMonth() async {
     Database db = await DatabaseHelper.instance.database;
     final now = DateTime.now();
-    final firstDayOfMonth = DateTime(now.year, now.month, 1).toIso8601String();
+    final firstDayOfMonth = DateTime(now.year, now.month, 1).toString();
 
     final sql = '''
       SELECT SUM(e.runtime) as total
@@ -93,7 +94,7 @@ class EpisodeWatchedDAO {
   Future<int> getWatchedMinutesCurrentYear() async {
     Database db = await DatabaseHelper.instance.database;
     final now = DateTime.now();
-    final firstDayOfYear = DateTime(now.year, 1, 1).toIso8601String();
+    final firstDayOfYear = DateTime(now.year, 1, 1).toString();
 
     final sql = '''
       SELECT SUM(e.runtime) as total

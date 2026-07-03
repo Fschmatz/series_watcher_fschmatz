@@ -13,9 +13,7 @@ class SeasonListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, List<int>>(
-      converter: (store) => store.state.watchedEpisodeIds,
-      builder: (context, watchedIds) {
+    final watchedIds = context.select((AppState state) => state.watchedEpisodeIds);
         final episodes = season.episodes ?? [];
         final watchedCount = episodes.where((e) => watchedIds.contains(e.id)).length;
 
@@ -33,7 +31,5 @@ class SeasonListTile extends StatelessWidget {
             );
           },
         );
-      },
-    );
   }
 }

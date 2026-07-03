@@ -1,11 +1,10 @@
 import 'package:animations/animations.dart';
-import 'package:async_redux/async_redux.dart';
 import 'package:flutter/material.dart';
 
 import '../entity/tv_show.dart';
-import '../redux/actions.dart';
 import '../redux/app_state.dart';
 import '../service/tv_service.dart';
+import '../util/toast_utils.dart';
 import '../widget/tv_show_card_search.dart';
 import 'tv_show_details_search.dart';
 
@@ -78,121 +77,112 @@ class _SearchPageState extends State<SearchPage> {
       }
     } catch (e) {
       if (mounted) setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ToastUtils.showErrorMessage('Error: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, (List<TvShow>, void Function(TvShow))>(
-      converter: (store) => (store.state.tvShows, (show) => store.dispatch(SaveTvShowAction(show))),
-      builder: (context, viewData) {
-        return Scaffold(
-          body: SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  child: SearchBar(
-                    controller: _searchController,
-                    autoFocus: true,
-                    leading: IconButton(
-                      icon: const Icon(Icons.arrow_back),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                    hintText: 'Search series...',
-                    onSubmitted: _search,
-                    elevation: WidgetStateProperty.all(0),
-                    backgroundColor: WidgetStateProperty.all(
-                      Theme.of(context).colorScheme.surfaceContainerHigh,
-                    ),
-                    trailing: [
-                      if (_isSearching)
-                        IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            _searchController.clear();
-                            setState(() {
-                              _results = [];
-                              _isSearching = false;
-                            });
-                          },
-                        )
-                      else
-                        IconButton(
-                          icon: const Icon(Icons.search),
-                          onPressed: () => _search(_searchController.text),
-                        ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: PageTransitionSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    transitionBuilder: (child, animation, secondaryAnimation) {
-                      return FadeThroughTransition(
-                        fillColor: Colors.transparent,
-                        animation: animation,
-                        secondaryAnimation: secondaryAnimation,
-                        child: child,
-                      );
-                    },
-            child: _isSearching
-                ? _isLoading
-                      ? const Center(key: ValueKey('loading_search'), child: CircularProgressIndicator())
-                      : _results.isEmpty
-                      ? const Center(key: ValueKey('no_results'), child: Text('No results found'))
-                      : ListView.builder(
-                          key: const ValueKey('results_list'),
-                          itemCount: _results.length,
-                          itemBuilder: (context, index) {
-                            final tvShow = _results[index];
-                            return TvShowCardSearch(
-                              key: ValueKey(tvShow.id),
-                              tvShow: tvShow,
-                              onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowDetailsSearch(tvShowId: tvShow.id!)));
-                              },
-                            );
-                          },
-                        )
-                : _isTrendingLoading
-                ? const Center(key: ValueKey('loading_trending'), child: CircularProgressIndicator())
-                : Column(
-                    key: const ValueKey('trending_view'),
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                        child: Text('Trending', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-                      ),
-                      Expanded(
-                        child: _trending.isEmpty
-                            ? const Center(child: Text('Could not load trending shows'))
-                            : ListView.builder(
-                                key: const ValueKey('trending_list'),
-                                itemCount: _trending.length,
-                                itemBuilder: (context, index) {
-                                  final tvShow = _trending[index];
-                                  return TvShowCardSearch(
-                                    key: ValueKey(tvShow.id),
-                                    tvShow: tvShow,
-                                    onTap: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowDetailsSearch(tvShowId: tvShow.id!)));
-                                    },
-                                  );
-                                },
-                              ),
-                      ),
-                    ],
-                  ),
-                  ),
-                ),
-              ],
+    final savedTvShows = context.select((AppState state) => state.tvShows);
+
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: SearchBar(
+                controller: _searchController,
+                autoFocus: true,
+                leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
+                hintText: 'Search series...',
+                onSubmitted: _search,
+                elevation: WidgetStateProperty.all(0),
+                backgroundColor: WidgetStateProperty.all(Theme.of(context).colorScheme.surfaceContainerHigh),
+                trailing: [
+                  if (_isSearching)
+                    IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() {
+                          _results = [];
+                          _isSearching = false;
+                        });
+                      },
+                    )
+                  else
+                    IconButton(icon: const Icon(Icons.search), onPressed: () => _search(_searchController.text)),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+            Expanded(
+              child: PageTransitionSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (child, animation, secondaryAnimation) {
+                  return FadeThroughTransition(
+                    fillColor: Colors.transparent,
+                    animation: animation,
+                    secondaryAnimation: secondaryAnimation,
+                    child: child,
+                  );
+                },
+                child: _isSearching
+                    ? _isLoading
+                          ? const Center(key: ValueKey('loading_search'), child: CircularProgressIndicator())
+                          : _results.isEmpty
+                          ? const Center(key: ValueKey('no_results'), child: Text('No results found'))
+                          : ListView.builder(
+                              key: const ValueKey('results_list'),
+                              itemCount: _results.length,
+                              itemBuilder: (context, index) {
+                                final tvShow = _results[index];
+                                return TvShowCardSearch(
+                                  key: ValueKey(tvShow.id),
+                                  tvShow: tvShow,
+                                  isSaved: savedTvShows.any((savedShow) => savedShow.id == tvShow.id),
+                                  onTap: () {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowDetailsSearch(tvShowId: tvShow.id!)));
+                                  },
+                                );
+                              },
+                            )
+                    : _isTrendingLoading
+                    ? const Center(key: ValueKey('loading_trending'), child: CircularProgressIndicator())
+                    : Column(
+                        key: const ValueKey('trending_view'),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                            child: Text('Trending', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                          ),
+                          Expanded(
+                            child: _trending.isEmpty
+                                ? const Center(child: Text('Could not load trending shows'))
+                                : ListView.builder(
+                                    key: const ValueKey('trending_list'),
+                                    itemCount: _trending.length,
+                                    itemBuilder: (context, index) {
+                                      final tvShow = _trending[index];
+                                      return TvShowCardSearch(
+                                        key: ValueKey(tvShow.id),
+                                        tvShow: tvShow,
+                                        isSaved: savedTvShows.any((savedShow) => savedShow.id == tvShow.id),
+                                        onTap: () {
+                                          Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowDetailsSearch(tvShowId: tvShow.id!)));
+                                        },
+                                      );
+                                    },
+                                  ),
+                          ),
+                        ],
+                      ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

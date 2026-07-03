@@ -168,8 +168,8 @@ class TvShowLocalService extends StoreService {
     await _tvShowDao.toggleShowInWidget(id, showInWidget);
   }
 
-  Future<List<HistoryItem>> getHistoryLastTwoMonths() async {
-    final maps = await _episodeWatchedDao.getHistoryLastTwoMonths();
+  Future<List<HistoryItem>> getHistoryCurrentMonth() async {
+    final maps = await _episodeWatchedDao.getHistoryCurrentMonth();
     return maps.map((m) => HistoryItem.fromMap(m)).toList();
   }
 

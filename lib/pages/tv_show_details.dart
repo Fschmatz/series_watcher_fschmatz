@@ -61,7 +61,7 @@ class _TvShowDetailsState extends State<TvShowDetails> {
           _isLoading = false;
         });
       }
-      ToastUtils.show('Error loading details: $e');
+      ToastUtils.showErrorMessage('Error loading details: $e');
     }
   }
 

@@ -23,6 +23,8 @@ class Settings extends StatefulWidget {
 class SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
+    final isSyncing = context.select((AppState state) => state.isSyncingShows);
+
     return Scaffold(
       appBar: AppBar(title: const Text("Settings")),
       body: ListView(
@@ -154,16 +156,14 @@ class SettingsState extends State<Settings> {
                 ),
                 Card(
                   clipBehavior: Clip.antiAlias,
-                  child: StoreConnector<AppState, ({bool isSyncing, VoidCallback onSync})>(
-                    converter: (store) => (isSyncing: store.state.isSyncingShows, onSync: () => store.dispatch(SyncTvShowsAction())),
-                    builder: (context, viewData) => ListTile(
-                      onTap: viewData.isSyncing
+                  child: ListTile(
+                      onTap: isSyncing
                           ? null
                           : () {
-                              viewData.onSync();
+                              context.dispatch(SyncTvShowsAction());
                               ToastUtils.show("Synchronizing series...");
                             },
-                      leading: viewData.isSyncing
+                      leading: isSyncing
                           ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
                           : const Icon(Icons.sync),
                       title: const Text("Sync series data"),
@@ -182,7 +182,6 @@ class SettingsState extends State<Settings> {
                       ),
                     ),
                   ),
-                ),
               ],
             ),
           ),

@@ -24,7 +24,7 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   Future<void> _loadHistory() async {
-    final history = await TvShowLocalService().getHistoryLastTwoMonths();
+    final history = await TvShowLocalService().getHistoryCurrentMonth();
     final month = await TvShowLocalService().getWatchedMinutesCurrentMonth();
     final year = await TvShowLocalService().getWatchedMinutesCurrentYear();
     if (mounted) {
@@ -116,7 +116,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 if (_history.isEmpty) {
                   return const Padding(
                     padding: EdgeInsets.all(32.0),
-                    child: Center(child: Text('No history for the last 2 months')),
+                    child: Center(child: Text('No history for this month')),
                   );
                 }
 

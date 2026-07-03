@@ -45,7 +45,7 @@ class BackupUtils {
       ToastUtils.show('Backup completed!');
       return true;
     } else {
-      ToastUtils.show('No data found!');
+      ToastUtils.showErrorMessage('No data found!');
       return false;
     }
   }
@@ -58,7 +58,7 @@ class BackupUtils {
 
       await file.writeAsString(json.encode(data));
     } catch (e) {
-      ToastUtils.show('Error!');
+      ToastUtils.showErrorMessage('Error!');
     }
   }
 
@@ -78,7 +78,7 @@ class BackupUtils {
       ToastUtils.show('Success!');
       return true;
     } catch (e) {
-      ToastUtils.show('Error!');
+      ToastUtils.showErrorMessage('Error!');
       return false;
     }
   }
