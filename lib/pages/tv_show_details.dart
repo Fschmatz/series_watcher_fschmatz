@@ -319,19 +319,33 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                                                   color: Theme.of(context).colorScheme.onSurface,
                                                 ),
                                               ),
-                                              if (nextEpisode.runtime != null && nextEpisode.runtime! > 0) ...[
+                                              if ((nextEpisode.runtime != null && nextEpisode.runtime! > 0) || (nextEpisode.airDate != null && _tvShow?.status?.toLowerCase() == 'returning series')) ...[
                                                 const SizedBox(height: 6),
                                                 Row(
                                                   children: [
-                                                    Icon(Icons.access_time_rounded, size: 14, color: Theme.of(context).colorScheme.primary),
-                                                    const SizedBox(width: 4),
-                                                    Text(
-                                                      '${nextEpisode.runtime} min',
-                                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                        color: Theme.of(context).colorScheme.primary,
-                                                        fontWeight: FontWeight.w600,
+                                                    if (nextEpisode.airDate != null && _tvShow?.status?.toLowerCase() == 'returning series') ...[
+                                                      Icon(Icons.calendar_today_outlined, size: 14, color: Theme.of(context).colorScheme.primary),
+                                                      const SizedBox(width: 4),
+                                                      Text(
+                                                        UtilsFunctions.formatDate(nextEpisode.airDate),
+                                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                          color: Theme.of(context).colorScheme.primary,
+                                                          fontWeight: FontWeight.w600,
+                                                        ),
                                                       ),
-                                                    ),
+                                                      if (nextEpisode.runtime != null && nextEpisode.runtime! > 0) const SizedBox(width: 12),
+                                                    ],
+                                                    if (nextEpisode.runtime != null && nextEpisode.runtime! > 0) ...[
+                                                      Icon(Icons.access_time_rounded, size: 14, color: Theme.of(context).colorScheme.primary),
+                                                      const SizedBox(width: 4),
+                                                      Text(
+                                                        '${nextEpisode.runtime} min',
+                                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                          color: Theme.of(context).colorScheme.primary,
+                                                          fontWeight: FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ],
                                                 ),
                                               ],

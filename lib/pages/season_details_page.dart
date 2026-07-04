@@ -99,6 +99,7 @@ class _SeasonDetailsPageState extends State<SeasonDetailsPage> {
                           margin: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                           clipBehavior: Clip.antiAlias,
                           child: ListView.separated(
+                            padding: EdgeInsets.zero,
                             key: const ValueKey('list'),
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
