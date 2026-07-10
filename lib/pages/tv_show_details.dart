@@ -98,7 +98,7 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                     child: Row(
                       children: [
                         Icon(
-                          tvShowLocal.showInWidget == true ? Icons.playlist_remove_outlined : Icons.playlist_add_outlined,
+                          tvShowLocal.showInWidget == true ? Icons.clear_outlined : Icons.push_pin_outlined,
                           size: 20,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -286,8 +286,6 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 12),
-                          WatchingProgressCard(watchedCount: watchedCount, totalCount: totalCount, progress: progress, margin: EdgeInsets.zero),
                           if (!isArchived && nextEpisode != null) ...[
                             const SizedBox(height: 16),
                             Card(
@@ -304,12 +302,20 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                'Next to Watch',
-                                                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Theme.of(context).colorScheme.primary,
-                                                ),
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    'Next to Watch',
+                                                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Theme.of(context).colorScheme.primary,
+                                                    ),
+                                                  ),
+                                                  if (tvShowLocal.showInWidget == true) ...[
+                                                    const SizedBox(width: 6),
+                                                    Icon(Icons.push_pin, size: 12, color: Theme.of(context).colorScheme.primary),
+                                                  ],
+                                                ],
                                               ),
                                               const SizedBox(height: 6),
                                               Text(
@@ -319,7 +325,8 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                                                   color: Theme.of(context).colorScheme.onSurface,
                                                 ),
                                               ),
-                                              if ((nextEpisode.runtime != null && nextEpisode.runtime! > 0) || (nextEpisode.airDate != null && _tvShow?.status?.toLowerCase() == 'returning series')) ...[
+                                              if ((nextEpisode.runtime != null && nextEpisode.runtime! > 0) ||
+                                                  (nextEpisode.airDate != null && _tvShow?.status?.toLowerCase() == 'returning series')) ...[
                                                 const SizedBox(height: 6),
                                                 Row(
                                                   children: [
@@ -349,20 +356,23 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                                                   ],
                                                 ),
                                               ],
-                                              if (nextEpisode.overview != null && nextEpisode.overview!.isNotEmpty) ...[
-                                                const SizedBox(height: 8),
-                                                Text(
-                                                  nextEpisode.overview!,
-                                                  maxLines: 3,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  style: Theme.of(
-                                                    context,
-                                                  ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                                ),
-                                              ],
                                             ],
                                           ),
                                         ),
+                                        if (nextEpisode.overview != null && nextEpisode.overview!.isNotEmpty)
+                                          IconButton(
+                                            icon: const Icon(Icons.info_outline),
+                                            onPressed: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) => AlertDialog(
+                                                  title: const Text('Overview'),
+                                                  content: SingleChildScrollView(child: Text(nextEpisode!.overview!)),
+                                                  actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+                                                ),
+                                              );
+                                            },
+                                          ),
                                       ],
                                     ),
                                     const SizedBox(height: 16),
@@ -386,6 +396,8 @@ class _TvShowDetailsState extends State<TvShowDetails> {
                               ),
                             ),
                           ],
+                          const SizedBox(height: 12),
+                          WatchingProgressCard(watchedCount: watchedCount, totalCount: totalCount, progress: progress, margin: EdgeInsets.zero),
                           const SizedBox(height: 24),
                         ],
                       );
