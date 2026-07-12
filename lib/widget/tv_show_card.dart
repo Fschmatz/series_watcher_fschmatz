@@ -206,19 +206,21 @@ class _TvShowCardState extends State<TvShowCard> with AutomaticKeepAliveClientMi
                     margin: EdgeInsets.zero,
                     child: Column(
                       children: [
-                        ListTile(
-                          leading: const Icon(Icons.check_outlined),
-                          title: const Text('Mark next as watched'),
-                          enabled: hasNextEpisode,
-                          onTap: () {
-                            if (tvShow.id != null) {
-                              ToastUtils.show('Marked next episode as watched');
-                              Navigator.pop(context);
-                              context.dispatch(MarkNextEpisodeAsWatchedAction(tvShow.id!));
-                            }
-                          },
-                        ),
-                        const Divider(),
+                        if (!tvShow.isArchived) ...[
+                          ListTile(
+                            leading: const Icon(Icons.check_outlined),
+                            title: const Text('Mark next episode as watched'),
+                            enabled: hasNextEpisode,
+                            onTap: () {
+                              if (tvShow.id != null) {
+                                ToastUtils.show('Marked as watched');
+                                Navigator.pop(context);
+                                context.dispatch(MarkNextEpisodeAsWatchedAction(tvShow.id!));
+                              }
+                            },
+                          ),
+                          const Divider(),
+                        ],
                         ListTile(
                           leading: Icon(tvShow.isArchived ? Icons.unarchive_outlined : Icons.archive_outlined),
                           title: Text(tvShow.isArchived ? 'Unarchive series' : 'Archive series'),

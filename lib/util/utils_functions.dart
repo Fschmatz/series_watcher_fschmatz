@@ -28,4 +28,11 @@ class UtilsFunctions {
       
     return Jiffy.parse(date).format(pattern: 'dd/MM/yyyy');    
   }
+
+  static String getBackupFilename() {
+    String name = AppConstants.backupFileName;
+    String dateTimeStr = Jiffy.now().format(pattern: 'dd_MM_yyyy_HHmmss');
+
+    return '${name}_$dateTimeStr.json';
+  }
 }

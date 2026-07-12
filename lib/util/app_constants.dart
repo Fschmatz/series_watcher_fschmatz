@@ -13,7 +13,7 @@ class AppConstants {
   static const String showSeriesStatusAppParameter = "showSeriesStatus";
 
   // STRINGS
-  static const String appVersion = "1.4.4";
+  static const String appVersion = "1.4.5";
   static const String backupFileName = "series_watcher_backup";
   static const String appName = "Series Watcher Fschmatz";
   static const String appNameHomePage = "Series Watcher";
@@ -23,6 +23,7 @@ class AppConstants {
 $appVersion
 - Add image to widget
 - UI changes
+- New backup logic
 - Flutter 3.44
 ''';
 
