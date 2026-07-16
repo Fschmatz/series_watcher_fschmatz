@@ -47,9 +47,9 @@ class Home extends StatelessWidget {
                 value: 3,
                 child: Row(
                   children: [
-                    Icon(Icons.search_outlined, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    Icon(Icons.add_outlined, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
                     const SizedBox(width: 12),
-                    const Text('Search'),
+                    const Text('Add'),
                   ],
                 ),
               ),

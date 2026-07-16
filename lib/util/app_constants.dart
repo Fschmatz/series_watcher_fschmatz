@@ -7,13 +7,15 @@ class AppConstants {
   // APP PARAMETERS
   static const String lastBackupDateAppParameter = "lastBackupDate";
   static const String lastSyncDateAppParameter = "lastSyncDate";
+  static const String lastSyncWatchlistDateAppParameter = "lastSyncWatchlistDate";
+  static const String lastSyncActiveDateAppParameter = "lastSyncActiveDate";
   static const String showNextEpisodeNameAppParameter = "showNextEpisodeName";
   static const String showNextEpisodeDurationAppParameter = "showNextEpisodeDuration";
   static const String showRemainingEpisodesAppParameter = "showRemainingEpisodes";
   static const String showSeriesStatusAppParameter = "showSeriesStatus";
 
   // STRINGS
-  static const String appVersion = "1.4.5";
+  static const String appVersion = "1.4.6";
   static const String backupFileName = "series_watcher_backup";
   static const String appName = "Series Watcher Fschmatz";
   static const String appNameHomePage = "Series Watcher";
@@ -23,7 +25,9 @@ class AppConstants {
 $appVersion
 - Add image to widget
 - UI changes
+- Add tab for on the air, popular e top rated to add series page
 - New backup logic
+- New sync options
 - Flutter 3.44
 ''';
 

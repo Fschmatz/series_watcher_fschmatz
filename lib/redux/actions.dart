@@ -3,9 +3,12 @@ import '../entity/app_parameter.dart';
 import '../entity/episode.dart';
 import '../entity/episode_watched.dart';
 import '../entity/tv_show.dart';
+import '../enum/sync_mode.dart';
 import '../service/app_parameter_service.dart';
 import '../service/tv_show_local_service.dart';
 import '../service/widget_service.dart';
+import '../util/app_constants.dart';
+import '../util/toast_utils.dart';
 import 'app_state.dart';
 import 'helper/app_action.dart';
 
@@ -92,17 +95,31 @@ class SaveTvShowAction extends AppAction {
   @override
   void after() {
     dispatch(LoadTvShowsAction());
+    ToastUtils.show("Sync completed!");
   }
 }
 
 class SyncTvShowsAction extends AppAction {
+  final SyncMode mode;
+
+  SyncTvShowsAction({this.mode = SyncMode.all});
+
   @override
   void before() => dispatch(_SetSyncingShowsAction(true));
 
   @override
   Future<AppState?> reduce() async {
-    await TvShowLocalService().syncAllSavedTvShows();
-    await AppParameterService().saveLastSyncDate();
+    await TvShowLocalService().syncTvShows(mode: mode);
+
+    String paramKey = AppConstants.lastSyncDateAppParameter;
+
+    if (mode == SyncMode.watchlist) {
+      paramKey = AppConstants.lastSyncWatchlistDateAppParameter;
+    } else if (mode == SyncMode.active) {
+      paramKey = AppConstants.lastSyncActiveDateAppParameter;
+    }
+
+    await AppParameterService().saveLastSyncDate(paramKey);
     dispatch(LoadAppParametersAction());
 
     return state.copyWith(isSyncingShows: false);
@@ -111,6 +128,7 @@ class SyncTvShowsAction extends AppAction {
   @override
   void after() {
     dispatch(LoadTvShowsAction());
+    ToastUtils.show("Sync completed!");
   }
 }
 
@@ -158,6 +176,7 @@ class ToggleArchiveTvShowAction extends AppAction {
   @override
   void after() {
     dispatch(LoadTvShowsAction(showLoading: false));
+    ToastUtils.show("Update completed!");
   }
 }
 
@@ -177,6 +196,7 @@ class ToggleShowInWidgetAction extends AppAction {
   @override
   void after() {
     dispatch(LoadTvShowsAction(showLoading: false));
+    ToastUtils.show("Update completed!");
   }
 }
 
@@ -287,5 +307,6 @@ class SyncSingleTvShowAction extends AppAction {
   @override
   void after() {
     dispatch(LoadTvShowsAction(showLoading: false));
+    ToastUtils.show("Update completed!");
   }
 }

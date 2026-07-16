@@ -8,10 +8,10 @@ import '../../util/utils_functions.dart';
 import '../redux/actions.dart';
 import '../redux/app_state.dart';
 import '../util/app_constants.dart';
-import '../util/toast_utils.dart';
 import '../widget/app_parameter_value.dart';
 import '../widget/settings_switch.dart';
 import 'changelog.dart';
+import 'sync_page.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -156,32 +156,18 @@ class SettingsState extends State<Settings> {
                 ),
                 Card(
                   clipBehavior: Clip.antiAlias,
-                  child: ListTile(
-                      onTap: isSyncing
-                          ? null
-                          : () {
-                              context.dispatch(SyncTvShowsAction());
-                              ToastUtils.show("Synchronizing series...");
-                            },
-                      leading: isSyncing
-                          ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
-                          : const Icon(Icons.sync),
-                      title: const Text("Sync series data"),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text("Update seasons and episodes"),
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              const Text("Last sync: "),
-                              AppParameterValue(parameterKey: AppConstants.lastSyncDateAppParameter),
-                            ],
-                          ),
-                        ],
+                  child: Column(
+                    children: [
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const SyncPage()));
+                        },
+                        leading: const Icon(Icons.sync),
+                        title: const Text("Synchronization"),
                       ),
-                    ),
+                    ],
                   ),
+                ),
               ],
             ),
           ),
@@ -204,20 +190,23 @@ class SettingsState extends State<Settings> {
                   child: Column(
                     children: [
                       ListTile(
-                        onTap: () async {
-                          bool? result = await showDialog<bool>(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return const DialogBackup(isCreateBackup: true);
-                            },
-                          );
+                        onTap: isSyncing
+                            ? null
+                            : () async {
+                                bool? result = await showDialog<bool>(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return const DialogBackup(isCreateBackup: true);
+                                  },
+                                );
 
-                          if (result == true && context.mounted) {
-                            context.dispatch(LoadAppParametersAction());
-                          }
-                        },
+                                if (result == true && context.mounted) {
+                                  context.dispatch(LoadAppParametersAction());
+                                }
+                              },
                         leading: const Icon(Icons.save_outlined),
                         title: const Text("Backup now"),
+                        enabled: !isSyncing,
                         subtitle: Row(
                           children: [
                             const Text("Last backup: "),
@@ -225,24 +214,27 @@ class SettingsState extends State<Settings> {
                           ],
                         ),
                       ),
-                      Divider(),
+                      const Divider(),
                       ListTile(
-                        onTap: () async {
-                          bool? result = await showDialog<bool>(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return const DialogBackup(isCreateBackup: false);
-                            },
-                          );
+                        onTap: isSyncing
+                            ? null
+                            : () async {
+                                bool? result = await showDialog<bool>(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return const DialogBackup(isCreateBackup: false);
+                                  },
+                                );
 
-                          if (result == true && context.mounted) {
-                            context.dispatch(LoadAppParametersAction());
-                            context.dispatch(LoadTvShowsAction());
-                            context.dispatch(LoadWatchedEpisodesAction());
-                          }
-                        },
+                                if (result == true && context.mounted) {
+                                  context.dispatch(LoadAppParametersAction());
+                                  context.dispatch(LoadTvShowsAction());
+                                  context.dispatch(LoadWatchedEpisodesAction());
+                                }
+                              },
                         leading: const Icon(Icons.settings_backup_restore_outlined),
                         title: const Text("Restore from backup"),
+                        enabled: !isSyncing,
                       ),
                     ],
                   ),

@@ -31,12 +31,12 @@ class AppParameterService extends StoreService {
     await saveParameter(AppParameter(key: AppConstants.lastBackupDateAppParameter, value: formattedDate));
   }
 
-  Future<void> saveLastSyncDate() async {
+  Future<void> saveLastSyncDate(String parameterKey) async {
     DateTime now = DateTime.now();
     String formattedDate =
         "${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
 
-    await saveParameter(AppParameter(key: AppConstants.lastSyncDateAppParameter, value: formattedDate));
+    await saveParameter(AppParameter(key: parameterKey, value: formattedDate));
   }
 
   Future<String?> getLastBackupDate() async {

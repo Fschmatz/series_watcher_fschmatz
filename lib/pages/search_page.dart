@@ -15,18 +15,27 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   List<TvShow> _results = [];
-  List<TvShow> _trending = [];
   bool _isLoading = false;
-  bool _isTrendingLoading = true;
   bool _isSearching = false;
+
+  late TabController _tabController;
+  List<TvShow> _trending = [];
+  List<TvShow> _onTheAir = [];
+  List<TvShow> _popular = [];
+  List<TvShow> _topRated = [];
+  bool _isTrendingLoading = true;
+  bool _isOnTheAirLoading = true;
+  bool _isPopularLoading = true;
+  bool _isTopRatedLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadTrending();
+    _tabController = TabController(length: 4, vsync: this);
+    _loadDiscoveryData();
     _searchController.addListener(() {
       setState(() {
         _isSearching = _searchController.text.isNotEmpty;
@@ -37,10 +46,11 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void dispose() {
     _searchController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
-  void _loadTrending() async {
+  void _loadDiscoveryData() async {
     try {
       final trending = await TvService().getTrendingTvShows();
       if (mounted) {
@@ -50,9 +60,43 @@ class _SearchPageState extends State<SearchPage> {
         });
       }
     } catch (e) {
+      if (mounted) setState(() => _isTrendingLoading = false);
+    }
+
+    try {
+      final onTheAir = await TvService().getOnTheAirTvShows();
       if (mounted) {
-        setState(() => _isTrendingLoading = false);
+        setState(() {
+          _onTheAir = onTheAir;
+          _isOnTheAirLoading = false;
+        });
       }
+    } catch (e) {
+      if (mounted) setState(() => _isOnTheAirLoading = false);
+    }
+
+    try {
+      final popular = await TvService().getPopularTvShows();
+      if (mounted) {
+        setState(() {
+          _popular = popular;
+          _isPopularLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isPopularLoading = false);
+    }
+
+    try {
+      final topRated = await TvService().getTopRatedTvShows();
+      if (mounted) {
+        setState(() {
+          _topRated = topRated;
+          _isTopRatedLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isTopRatedLoading = false);
     }
   }
 
@@ -93,7 +137,7 @@ class _SearchPageState extends State<SearchPage> {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: SearchBar(
                 controller: _searchController,
-                autoFocus: true,
+                autoFocus: false,
                 leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
                 hintText: 'Search series...',
                 onSubmitted: _search,
@@ -147,34 +191,70 @@ class _SearchPageState extends State<SearchPage> {
                                 );
                               },
                             )
-                    : _isTrendingLoading
-                    ? const Center(key: ValueKey('loading_trending'), child: CircularProgressIndicator())
                     : Column(
-                        key: const ValueKey('trending_view'),
+                        key: const ValueKey('discovery_view'),
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                            child: Text('Trending', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                          TabBar(
+                            controller: _tabController,
+                            isScrollable: true,
+                            tabAlignment: TabAlignment.start,
+                            dividerColor: Colors.transparent,
+                            onTap: (index) {
+                              setState(() {});
+                            },
+                            tabs: const [
+                              Tab(text: "Trending"),
+                              Tab(text: "On The Air"),
+                              Tab(text: "Popular"),
+                              Tab(text: "Top Rated"),
+                            ],
                           ),
+                          const SizedBox(height: 8),
                           Expanded(
-                            child: _trending.isEmpty
-                                ? const Center(child: Text('Could not load trending shows'))
-                                : ListView.builder(
-                                    key: const ValueKey('trending_list'),
-                                    itemCount: _trending.length,
-                                    itemBuilder: (context, index) {
-                                      final tvShow = _trending[index];
-                                      return TvShowCardSearch(
-                                        key: ValueKey(tvShow.id),
-                                        tvShow: tvShow,
-                                        isSaved: savedTvShows.any((savedShow) => savedShow.id == tvShow.id),
-                                        onTap: () {
-                                          Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowDetailsSearch(tvShowId: tvShow.id!)));
-                                        },
-                                      );
-                                    },
-                                  ),
+                            child: Builder(
+                              builder: (context) {
+                                List<TvShow> currentList;
+                                bool isLoading;
+
+                                if (_tabController.index == 0) {
+                                  currentList = _trending;
+                                  isLoading = _isTrendingLoading;
+                                } else if (_tabController.index == 1) {
+                                  currentList = _onTheAir;
+                                  isLoading = _isOnTheAirLoading;
+                                } else if (_tabController.index == 2) {
+                                  currentList = _popular;
+                                  isLoading = _isPopularLoading;
+                                } else {
+                                  currentList = _topRated;
+                                  isLoading = _isTopRatedLoading;
+                                }
+
+                                if (isLoading) {
+                                  return const Center(child: CircularProgressIndicator());
+                                }
+
+                                if (currentList.isEmpty) {
+                                  return const Center(child: Text('Could not load series'));
+                                }
+
+                                return ListView.builder(
+                                  itemCount: currentList.length,
+                                  itemBuilder: (context, index) {
+                                    final tvShow = currentList[index];
+                                    return TvShowCardSearch(
+                                      key: ValueKey(tvShow.id),
+                                      tvShow: tvShow,
+                                      isSaved: savedTvShows.any((savedShow) => savedShow.id == tvShow.id),
+                                      onTap: () {
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowDetailsSearch(tvShowId: tvShow.id!)));
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ],
                       ),

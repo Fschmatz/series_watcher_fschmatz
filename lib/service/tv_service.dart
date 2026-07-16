@@ -29,13 +29,31 @@ class TvService extends StoreService {
 
   Future<List<TvShow>> getTrendingTvShows() async {
     final response = await http.get(Uri.parse('${ApiConfigs.baseUrl}/trending/tv/week?api_key=${ApiConfigs.apiKey}'));
+    return _handleTvResponse(response);
+  }
 
+  Future<List<TvShow>> getPopularTvShows() async {
+    final response = await http.get(Uri.parse('${ApiConfigs.baseUrl}/tv/popular?api_key=${ApiConfigs.apiKey}'));
+    return _handleTvResponse(response);
+  }
+
+  Future<List<TvShow>> getTopRatedTvShows() async {
+    final response = await http.get(Uri.parse('${ApiConfigs.baseUrl}/tv/top_rated?api_key=${ApiConfigs.apiKey}'));
+    return _handleTvResponse(response);
+  }
+
+  Future<List<TvShow>> getOnTheAirTvShows() async {
+    final response = await http.get(Uri.parse('${ApiConfigs.baseUrl}/tv/on_the_air?api_key=${ApiConfigs.apiKey}'));
+    return _handleTvResponse(response);
+  }
+
+  List<TvShow> _handleTvResponse(http.Response response) {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final List results = data['results'];
       return results.map((m) => TvShow.fromMap(m)).toList();
     } else {
-      throw Exception('Failed to fetch trending TV shows');
+      throw Exception('Failed to fetch TV shows');
     }
   }
 

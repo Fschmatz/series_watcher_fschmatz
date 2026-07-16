@@ -14,6 +14,8 @@ import '../entity/tv_show.dart';
 import '../util/api_configs.dart';
 import 'tv_service.dart';
 
+import '../enum/sync_mode.dart';
+
 class TvShowLocalService extends StoreService {
   static final TvShowLocalService _instance = TvShowLocalService._internal();
 
@@ -122,10 +124,19 @@ class TvShowLocalService extends StoreService {
     return null;
   }
 
-  Future<void> syncAllSavedTvShows() async {
+  Future<void> syncTvShows({SyncMode mode = SyncMode.all}) async {
     List<TvShow> savedShows = await getAllTvShows();
     for (var show in savedShows) {
-      if (show.id != null) {
+      bool shouldSync = false;
+      if (mode == SyncMode.all) {
+        shouldSync = true;
+      } else if (mode == SyncMode.watchlist) {
+        shouldSync = !show.isArchived;
+      } else if (mode == SyncMode.active) {
+        shouldSync = show.status != 'Ended';
+      }
+
+      if (shouldSync && show.id != null) {
         await downloadAndSaveTvShow(show.id!);
       }
     }
