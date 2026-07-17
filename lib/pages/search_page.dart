@@ -240,6 +240,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                                 }
 
                                 return ListView.builder(
+                                  key: PageStorageKey('discovery_list_${_tabController.index}'),
                                   itemCount: currentList.length,
                                   itemBuilder: (context, index) {
                                     final tvShow = currentList[index];

@@ -43,8 +43,9 @@ class _HistoryPageState extends State<HistoryPage> {
       appBar: AppBar(title: const Text('Watch History')),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
+          : ListView.separated(
               itemCount: _history.isEmpty ? 2 : _history.length + 1,
+              separatorBuilder: (BuildContext context, int index) => const Divider(),
               itemBuilder: (context, index) {
                 if (index == 0) {
                   return Padding(
@@ -62,9 +63,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                   const SizedBox(height: 8),
                                   Text(
                                     'This Month',
-                                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                    ),
+                                    style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
@@ -91,9 +90,9 @@ class _HistoryPageState extends State<HistoryPage> {
                                   const SizedBox(height: 8),
                                   Text(
                                     'This Year',
-                                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                                    ),
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onSecondaryContainer),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
